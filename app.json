@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Ambativasi",
+    "slug": "misa-misacom",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon-keren.png",
+    "scheme": "ambativasi",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "softwareKeyboardLayoutMode": "pan",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/icon-keren.png",
+        "backgroundImage": "./assets/images/icon-keren.png",
+        "monochromeImage": "./assets/images/icon-keren.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "usesCleartextTraffic": true,
+      "package": "org.misa.ambativasi"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon-keren.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/iconkeren-siluet-nobg.png",
+          "sounds": [
+            "./assets/sounds/ding.mp3"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9322c8ef-f1f5-42e8-92dc-37a019bbf07c"
+      }
+    },
+    "owner": "misa-misacom"
+  }
+}

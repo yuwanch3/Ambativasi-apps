@@ -1,0 +1,126 @@
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { LevelCard } from "../../components/LevelCard";
+import { ScreenShell } from "../../components/ScreenShell";
+import { useLanguage } from "../../context/LanguageContext";
+import { useTheme } from "../../context/ThemeContext";
+
+export default function MateriScreen() {
+  const { colors } = useTheme();
+  const { t, language } = useLanguage();
+
+  const levels = [
+    {
+      id: 1,
+      image: require("../../assets/icons/icon-bahasa-jepang.png"),
+      judul: language === "id" ? "Bahasa Jepang" : "Japanese Language",
+      sub:
+        language === "id"
+          ? "Penjelasan materi Bahasa Jepang"
+          : "Japanese subject material explanation",
+      path: "/materi/bahasa-jepang/nihongo",
+    },
+    {
+      id: 2,
+      image: require("../../assets/icons/icon-tajwid.png"),
+      judul: language === "id" ? "Tajwid" : "Tajweed",
+      sub:
+        language === "id"
+          ? "Penjelasan materi Tajwid"
+          : "Tajweed subject material explanation",
+      path: "/materi/tajwid-islam/tajwid",
+    },
+    {
+      id: 3,
+      image: require("../../assets/icons/icon-petrophysics.png"),
+      judul: language === "id" ? "Petrofisika" : "Petrophysics",
+      sub:
+        language === "id"
+          ? "Penjelasan materi Petrofisika"
+          : "Petrophysics subject material explanation",
+      path: "/materi/petrofisika/petrofisika",
+    },
+    {
+      id: 4,
+      image: require("../../assets/icons/icon-Chemical-EOR.png"),
+      judul: "Chemical EOR",
+      sub:
+        language === "id"
+          ? "Penjelasan materi Chemical EOR (Enhanced Oil Recovery)"
+          : "Chemical EOR (Enhanced Oil Recovery) subject material explanation",
+      path: "/materi/chemical-eor/chemical-eor",
+    },
+  ];
+
+  return (
+    <ScreenShell>
+      <View style={styles.mainContent}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={20}
+            color={colors.isDark ? "#4ADE80" : "#16A34A"}
+          />
+          <Text
+            style={[
+              styles.backButtonText,
+              { color: colors.isDark ? "#4ADE80" : "#16A34A" },
+            ]}
+          >
+            {t("back_to_dashboard")}
+          </Text>
+        </TouchableOpacity>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollContainer}
+        >
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("select_materi")}
+          </Text>
+
+          {levels.map((level) => (
+            <LevelCard
+              key={level.id}
+              item={level}
+              onPress={(path) => router.push(path as any)}
+            />
+          ))}
+        </ScrollView>
+      </View>
+    </ScreenShell>
+  );
+}
+
+const styles = StyleSheet.create({
+  mainContent: { flex: 1, paddingHorizontal: 20, paddingTop: 8 },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    marginBottom: 16,
+  },
+  backButtonText: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginLeft: 6,
+  },
+  scrollContainer: { flex: 1, marginTop: 4 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+});
