@@ -8,10 +8,7 @@
     "scheme": "ambativasi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": [
-      "android",
-      "ios"
-    ],
+    "platforms": ["android", "ios"],
     "ios": {
       "supportsTablet": true
     },
@@ -46,9 +43,7 @@
         "expo-notifications",
         {
           "icon": "./assets/images/iconkeren-siluet-nobg.png",
-          "sounds": [
-            "./assets/sounds/ding.mp3"
-          ]
+          "sounds": ["./assets/sounds/ding.mp3"]
         }
       ]
     ],
