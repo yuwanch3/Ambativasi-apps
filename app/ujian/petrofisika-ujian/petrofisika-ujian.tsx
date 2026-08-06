@@ -143,13 +143,42 @@ export default function MateriScreen() {
   const levels = [
     {
       id: 1,
-      image: require("../../../assets/icons/icon-fundamental.png"),
-      judul: "Fundamental",
+      image: require("../../../assets/icons/icon-petrophysics.png"),
+      judul:
+        language === "id"
+          ? "Seri 1: Routine Core Analysis"
+          : "Series 1: Routine Core Analysis",
       sub:
         language === "id"
-          ? "Ujian Materi Petrofisika Fundamental"
-          : "Petrophysics Fundamental Exam",
-      path: "/ujian/petrofisika-ujian/fundamental/ujian-petrofisika",
+          ? "Ujian materi inti Petrofisika"
+          : "Petrophysics core material exam",
+      path: "/ujian/petrofisika-ujian/bab-list?seri=seri-1",
+    },
+    {
+      id: 2,
+      image: require("../../../assets/icons/icon-petrophysics.png"),
+      judul:
+        language === "id"
+          ? "Seri 2: Special Core Analysis"
+          : "Series 2: Special Core Analysis",
+      sub:
+        language === "id"
+          ? "Ujian materi khusus Petrofisika"
+          : "Petrophysics special material exam",
+      path: "/ujian/petrofisika-ujian/bab-list?seri=seri-2",
+    },
+    {
+      id: 3,
+      image: require("../../../assets/icons/icon-petrophysics.png"),
+      judul:
+        language === "id"
+          ? "Seri 3: Digital Core Analysis"
+          : "Series 3: Digital Core Analysis",
+      sub:
+        language === "id"
+          ? "Ujian materi digital Petrofisika"
+          : "Petrophysics digital material exam",
+      path: "/ujian/petrofisika-ujian/bab-list?seri=seri-3",
     },
   ];
 
@@ -197,7 +226,7 @@ export default function MateriScreen() {
           style={styles.scrollContainer}
         >
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {language === "id" ? "Pilih BAB" : "Select Chapter"}
+            {language === "id" ? "Pilih Seri Buku" : "Select Book Series"}
           </Text>
 
           {levels.map((level) => (

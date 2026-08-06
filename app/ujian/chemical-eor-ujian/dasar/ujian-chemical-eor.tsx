@@ -32,6 +32,9 @@ import { Sidebar } from "../../../../components/sidebar";
 // 💡 IMPORT DIRECT GEMINI SERVICE
 import { generateSoalDirectGemini } from "../../../../src/service/geminiService";
 
+// 💡 IMPORT RINGKASAN MATERI (AGAR SOAL SESUAI ISI BUKU)
+import { getRingkasanMateri } from "../../../../src/data/ringkasanMateri";
+
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../context/ThemeContext";
 import { useLanguage } from "../../../../context/LanguageContext";
@@ -296,9 +299,13 @@ export default function SubUjianChemicalEOR() {
     try {
       setLoadingAI(true);
       // 🔥 MENGAMBIL 50 BUTIR SOAL KHUSUS UJIAN
+      const finalSumberData = sumber_data ? String(sumber_data) : "CHEMICAL_EOR_SURFAKTAN";
+      const ringkasan = getRingkasanMateri(finalSumberData);
       const dataSoal = await generateSoalDirectGemini(
-        sumber_data ? String(sumber_data) : "CHEMICAL_EOR_DASAR",
+        finalSumberData,
         50,
+        "Indonesia",
+        ringkasan,
       );
       setListSoal(dataSoal);
     } catch (error: any) {
@@ -374,11 +381,11 @@ export default function SubUjianChemicalEOR() {
           judul_bab: String(
             judul_bab ||
               (language === "id"
-                ? "Chemical EOR Dasar"
-                : "Basic Chemical EOR"),
+                ? "Ujian Chemical EOR"
+                : "Chemical EOR Exam"),
           ),
           tipe_sumber: String(tipe_sumber || "text"),
-          sumber_data: String(sumber_data || "CHEMICAL_EOR_DASAR"),
+          sumber_data: String(sumber_data || "CHEMICAL_EOR_SURFAKTAN"),
         },
       });
     } catch (e) {
@@ -453,8 +460,8 @@ export default function SubUjianChemicalEOR() {
         <ActivityIndicator size="large" color="#16A34A" />
         <Text style={[styles.teksLoading, { color: colors.subtext }]}>
           {language === "id"
-            ? "Sedang meracik 50 butir soal Chemical EOR Dasar via AI..."
-            : "Generating 50 Basic Chemical EOR exam questions via AI..."}
+            ? "Sedang meracik 50 butir soal Chemical EOR via AI..."
+            : "Generating 50 Chemical EOR exam questions via AI..."}
         </Text>
       </View>
     );
@@ -608,8 +615,8 @@ export default function SubUjianChemicalEOR() {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {judul_bab ||
             (language === "id"
-              ? "Chemical EOR Dasar"
-              : "Basic Chemical EOR")}
+              ? "Ujian Chemical EOR"
+              : "Chemical EOR Exam")}
         </Text>
 
         {/* --- NAVIGASI NOMOR SOAL --- */}
@@ -930,7 +937,7 @@ export default function SubUjianChemicalEOR() {
             </Text>
             <Text style={[styles.modalSubtitle, { color: colors.subtext }]}>
               {language === "id"
-                ? "Selamat, kamu telah menyelesaikan ujian Chemical EOR Dasar ini."
+                ? "Selamat, kamu telah menyelesaikan ujian Chemical EOR ini."
                 : "Congratulations, you have completed this Basic Chemical EOR exam."}
             </Text>
             <TouchableOpacity

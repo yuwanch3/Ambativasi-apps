@@ -10,9 +10,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
     Animated,
     Easing,
+    Modal,
     Pressable,
     SafeAreaView,
     ScrollView,
@@ -22,6 +22,17 @@ import {
 } from "react-native";
 
 import { WebView } from "react-native-webview";
+
+import { Ionicons } from "@expo/vector-icons";
+
+import API_URL, { apiFetch } from "../../../config";
+import { useLanguage } from "../../../context/LanguageContext";
+import {
+    useTheme,
+    type ThemeColors,
+} from "../../../context/ThemeContext";
+import { getSession } from "../../../src/utils/session";
+import { getCurrentStreak, recordActivity } from "../../../src/utils/streakTracker";
 import { JUZ_AMMA_PART_1, type SurahOption } from "./data/juzAmmaPart1";
 import { JUZ_AMMA_PART_2 } from "./data/juzAmmaPart2";
 import { QURAN_FONT_DATA_URI } from "./data/quranFont";
@@ -439,6 +450,36 @@ function mergeTranscriptParts(
 // 5. KOMPONEN UTAMA APLIKASI
 // ============================================================
 export default function App() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+
+  // Terjemahan dengan placeholder: tr("key", { ayah: 3 }).
+  const tr = (key: string, params?: Record<string, string | number>) => {
+    let text = t(key);
+    if (params) {
+      Object.entries(params).forEach(([paramKey, value]) => {
+        text = text.replaceAll(`{${paramKey}}`, String(value));
+      });
+    }
+    return text;
+  };
+
+  // Notifikasi modal pengganti Alert.alert default.
+  const [notification, setNotification] = useState<{
+    title: string;
+    message: string;
+  } | null>(null);
+
+  const showNotification = (title: string, message: string) => {
+    setNotification({ title, message });
+  };
+
+  const closeNotification = () => {
+    setNotification(null);
+  };
+
+  const styles = createStyles(colors);
+
   // Font Quran untuk tampilan Teks Terdengar.
   const [fontsLoaded] = useFonts({
     "Amiri Quran": require("../../../assets/fonts/AmiriQuran.ttf"),
@@ -487,7 +528,7 @@ export default function App() {
 
   const [isAyahPickerVisible, setIsAyahPickerVisible] = useState(false);
 
-  const [statusMessage, setStatusMessage] = useState("Belum merekam");
+  const [statusMessage, setStatusMessage] = useState("");
 
   const [recognizedWordStatuses, setRecognizedWordStatuses] = useState<
     WordStatus[]
@@ -514,6 +555,74 @@ export default function App() {
   const isAutoAdvancingRef = useRef(false);
 
   const latestProgressRef = useRef<VerseProgress | null>(null);
+
+  // ----------------------------------------------------------
+  // 5C2. AKUMULATOR XP TILAWAH PER SESI
+  // Kata benar dihitung per ayat, lalu disubmit satu kali
+  // saat sesi berhenti (aman untuk server dan tidak hangus
+  // kalau berhenti di tengah surah).
+  // ----------------------------------------------------------
+  const sessionStatsRef = useRef<{
+    correct: number;
+    total: number;
+    countedAyahs: Set<string>;
+  }>({ correct: 0, total: 0, countedAyahs: new Set() });
+
+  const isSubmittingXpRef = useRef(false);
+
+  const addAyahWords = (ayahKey: string, statuses: WordStatus[]) => {
+    if (sessionStatsRef.current.countedAyahs.has(ayahKey)) {
+      return;
+    }
+    const total = statuses.length;
+    const correct = statuses.filter((s) => s === "correct").length;
+    sessionStatsRef.current.correct += correct;
+    sessionStatsRef.current.total += total;
+    sessionStatsRef.current.countedAyahs.add(ayahKey);
+  };
+
+  const resetSessionStats = () => {
+    sessionStatsRef.current = {
+      correct: 0,
+      total: 0,
+      countedAyahs: new Set(),
+    };
+  };
+
+  const submitTilawahSession = async () => {
+    if (isSubmittingXpRef.current) {
+      return;
+    }
+    if (sessionStatsRef.current.total === 0) {
+      return;
+    }
+    isSubmittingXpRef.current = true;
+    try {
+      const session = await getSession();
+      if (!session?.email) {
+        return;
+      }
+      const streak = await getCurrentStreak();
+      await apiFetch(`${API_URL}/submit-xp.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: session.email,
+          type: "tilawah",
+          correct: sessionStatsRef.current.correct,
+          total: sessionStatsRef.current.total,
+          streak,
+        }),
+      });
+      await recordActivity();
+      resetSessionStats();
+    } catch (e) {
+      console.log("Gagal kirim XP tilawah ke server", e);
+    } finally {
+      isSubmittingXpRef.current = false;
+    }
+  };
+
   // ----------------------------------------------------------
   // 5D. ANIMASI GELOMBANG SAAT SEDANG MEREKAM
   // ----------------------------------------------------------
@@ -572,13 +681,13 @@ export default function App() {
   // Mencegah crash jika activeSurah atau verses bernilai undefined
   if (!activeSurah || !activeSurah.verses || activeSurah.verses.length === 0) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ActivityIndicator size="large" color="#4f7cff" />
-          <Text style={{ color: "#fff", marginTop: 12 }}>
-            Memuat data surah...
+          <Text style={{ color: colors.text, marginTop: 12 }}>
+            {t("speech_loading_surah")}
           </Text>
         </View>
       </SafeAreaView>
@@ -675,8 +784,16 @@ export default function App() {
       mergeArabicPrefixWords(activeVerse.text, false).map(() => "correct"),
     );
 
+    // Akumulasi XP tilawah: seluruh kata ayat ini dihitung benar.
+    addAyahWords(
+      `${activeSurah.number}-${activeVerse.ayah}`,
+      mergeArabicPrefixWords(activeVerse.text, false).map(
+        () => "correct",
+      ) as WordStatus[],
+    );
+
     setStatusMessage(
-      `Ayat ${activeVerse.ayah} benar. Melanjutkan ke ayat berikutnya...`,
+      tr("speech_ayah_correct", { ayah: activeVerse.ayah }),
     );
 
     // Jalankan animasi perpindahan ayat.
@@ -706,11 +823,14 @@ export default function App() {
         setIsVerseTransitioning(false);
         setIsAllCompleted(true);
 
-        setStatusMessage("Seluruh surat Juz Amma selesai dibaca dengan benar.");
+        // Kirim XP untuk seluruh sesi tilawah yang sudah selesai.
+        void submitTilawahSession();
 
-        Alert.alert(
-          "Alhamdulillah!",
-          "Seluruh surat Juz Amma telah selesai dibaca.",
+        setStatusMessage(t("speech_all_done_status"));
+
+        showNotification(
+          t("speech_all_done_title"),
+          t("speech_all_done_message"),
         );
       }, 900);
 
@@ -744,7 +864,7 @@ export default function App() {
       resetCurrentAyah(nextVerse.text);
 
       setStatusMessage(
-        `Silakan membaca ${nextSurah.name} ayat ${nextVerse.ayah}.`,
+        tr("speech_read_next", { name: nextSurah.name, ayah: nextVerse.ayah }),
       );
 
       isAutoAdvancingRef.current = false;
@@ -767,7 +887,7 @@ export default function App() {
     setIsRecognizing(true);
     stopRequestedRef.current = false;
 
-    setStatusMessage(`Sedang membaca ayat ${activeVerse.ayah}.`);
+    setStatusMessage(tr("speech_reading_ayah", { ayah: activeVerse.ayah }));
   });
 
   // Event ketika hasil suara masuk secara real-time.
@@ -811,17 +931,17 @@ export default function App() {
 
     if (progress.hasWrong) {
       setStatusMessage(
-        `Masih terdapat kesalahan pada ayat ${activeVerse.ayah}.`,
+        tr("speech_error_ayah", { ayah: activeVerse.ayah }),
       );
       return;
     }
 
     if (progress.matchedWords > 0) {
-      setStatusMessage(`Sedang membaca ayat ${activeVerse.ayah}.`);
+      setStatusMessage(tr("speech_reading_ayah", { ayah: activeVerse.ayah }));
       return;
     }
 
-    setStatusMessage("Sedang mendengarkan...");
+    setStatusMessage(t("speech_listening"));
   });
 
   // Event ketika suara tidak cocok atau tidak dikenali.
@@ -830,7 +950,7 @@ export default function App() {
       return;
     }
 
-    setStatusMessage(`Ayat ${activeVerse.ayah} belum dapat dikenali.`);
+    setStatusMessage(tr("speech_not_recognized", { ayah: activeVerse.ayah }));
   });
 
   // Event ketika speech recognition mengalami error.
@@ -848,7 +968,9 @@ export default function App() {
     setIsPreparing(false);
     setIsRecognizing(false);
 
-    setStatusMessage(`Pengenalan suara gagal: ${event.message}`);
+    setStatusMessage(
+      tr("speech_recognition_failed", { message: event.message }),
+    );
   });
 
   // Event ketika proses mendengarkan berakhir.
@@ -888,9 +1010,7 @@ export default function App() {
         ExpoSpeechRecognitionModule.isRecognitionAvailable();
 
       if (!recognitionAvailable) {
-        throw new Error(
-          "Layanan pengenalan suara tidak tersedia di perangkat ini.",
-        );
+        throw new Error(t("speech_service_unavailable"));
       }
 
       const permission =
@@ -901,17 +1021,14 @@ export default function App() {
 
         setIsPreparing(false);
 
-        setStatusMessage("Izin mikrofon tidak diberikan.");
+        setStatusMessage(t("speech_mic_denied"));
 
-        Alert.alert(
-          "Izin diperlukan",
-          "Izinkan akses mikrofon agar aplikasi dapat mengenali bacaan.",
-        );
+        showNotification(t("speech_permission_title"), t("speech_permission_message"));
 
         return;
       }
 
-      setStatusMessage(`Sedang membaca ayat ${targetVerse.ayah}.`);
+      setStatusMessage(tr("speech_reading_ayah", { ayah: targetVerse.ayah }));
 
       ExpoSpeechRecognitionModule.start({
         lang: "ar-SA",
@@ -931,11 +1048,11 @@ export default function App() {
       const message =
         error instanceof Error
           ? error.message
-          : "Pengenalan suara tidak dapat dimulai.";
+          : t("speech_cannot_start");
 
       setStatusMessage(message);
 
-      Alert.alert("Pengenalan suara gagal", message);
+      showNotification(t("speech_recognition_failed_title"), message);
     }
   };
 
@@ -976,14 +1093,25 @@ export default function App() {
       setTimeout(resolve, 150);
     });
 
+    // Akumulasi kata yang benar pada ayat aktif (meski sebagian)
+    // lalu kirim XP sesi ini satu kali. Aman: kata yang sudah
+    // dihitung saat ayat selesai otomatis tidak dihitung dua kali.
+    if (checkedProgress) {
+      addAyahWords(
+        `${activeSurah.number}-${activeVerse.ayah}`,
+        checkedProgress.statuses,
+      );
+    }
+    void submitTilawahSession();
+
     if (!checkedProgress) {
-      setStatusMessage(`Ayat ${activeVerse.ayah} belum terbaca.`);
+      setStatusMessage(tr("speech_ayah_not_read", { ayah: activeVerse.ayah }));
 
       playErrorSound();
 
-      Alert.alert(
-        "Bacaan belum terbaca",
-        `Ayat ${activeVerse.ayah} belum berhasil dikenali. Silakan rekam dan baca kembali.`,
+      showNotification(
+        t("speech_not_read_title"),
+        tr("speech_not_read_message", { ayah: activeVerse.ayah }),
       );
 
       return;
@@ -1004,7 +1132,7 @@ export default function App() {
       );
 
       setStatusMessage(
-        `Ayat ${activeVerse.ayah} berhasil dibaca dengan benar.`,
+        tr("speech_read_correct", { ayah: activeVerse.ayah }),
       );
 
       playSuccessSound();
@@ -1014,26 +1142,26 @@ export default function App() {
 
     if (checkedProgress.hasWrong) {
       setStatusMessage(
-        `Masih terdapat kesalahan pada ayat ${activeVerse.ayah}.`,
+        tr("speech_error_ayah", { ayah: activeVerse.ayah }),
       );
 
       playErrorSound();
 
-      Alert.alert(
-        "Bacaan belum benar",
-        `Masih terdapat kata yang salah pada ayat ${activeVerse.ayah}. Periksa bagian berwarna merah, kemudian rekam kembali.`,
+      showNotification(
+        t("speech_incorrect_title"),
+        tr("speech_incorrect_message", { ayah: activeVerse.ayah }),
       );
 
       return;
     }
 
-    setStatusMessage(`Ayat ${activeVerse.ayah} belum selesai dibaca.`);
+    setStatusMessage(tr("speech_not_finished", { ayah: activeVerse.ayah }));
 
     playErrorSound();
 
-    Alert.alert(
-      "Bacaan belum selesai",
-      `Ayat ${activeVerse.ayah} belum dibaca sampai selesai. Bagian berwarna hitam belum terbaca.`,
+    showNotification(
+      t("speech_not_finished_title"),
+      tr("speech_not_finished_message", { ayah: activeVerse.ayah }),
     );
   };
 
@@ -1085,8 +1213,8 @@ export default function App() {
 
     setStatusMessage(
       savedAyahIndex > 0
-        ? `${selectedSurah.name} dipilih kembali. Dilanjutkan dari ayat ${savedVerse.ayah}.`
-        : `${selectedSurah.name} dipilih. Silakan mulai dari ayat 1.`,
+        ? tr("speech_surah_resumed", { name: selectedSurah.name, ayah: savedVerse.ayah })
+        : tr("speech_surah_selected", { name: selectedSurah.name }),
     );
   };
 
@@ -1115,7 +1243,7 @@ export default function App() {
     setIsAyahPickerVisible(false);
 
     setStatusMessage(
-      `${activeSurah.name} ayat ${selectedVerse.ayah} dipilih. Silakan mulai membaca.`,
+      tr("speech_ayah_selected", { name: activeSurah.name, ayah: selectedVerse.ayah }),
     );
   };
 
@@ -1133,7 +1261,7 @@ export default function App() {
           ? "#25b925"
           : status === "wrong"
             ? "#e32636"
-            : "#e8ecf4";
+            : colors.text;
 
       return `
         <span style="color: ${color};">
@@ -1166,7 +1294,7 @@ export default function App() {
       body {
         margin: 0;
         padding: 0;
-        background-color: #10131a;
+        background-color: ${colors.background};
       }
 
       body {
@@ -1181,7 +1309,7 @@ export default function App() {
 
       .verse {
         padding: 12px 8px;
-        color: #e8ecf4;
+        color: ${colors.text};
         line-height: 2;
         transition: transform 650ms ease, opacity 650ms ease, background-color 650ms ease;
       }
@@ -1196,7 +1324,7 @@ export default function App() {
         margin: 8px 0;
         padding: 18px 10px;
         border-radius: 14px;
-        background-color: #1b2130;
+        background-color: ${colors.card};
         font-size: 32px;
         font-weight: 500;
         opacity: 1;
@@ -1232,7 +1360,7 @@ body.transitioning .next {
   from {
     transform: translateY(0) scale(1);
     opacity: 1;
-    background-color: #1b2130;
+    background-color: ${colors.card};
   }
 
   to {
@@ -1261,9 +1389,9 @@ body.transitioning .next {
         min-width: 28px;
         height: 28px;
         margin-right: 6px;
-        border: 1px solid #6d7890;
+        border: 1px solid ${colors.border};
         border-radius: 50%;
-        color: #cbd3e1;
+        color: ${colors.subtext};
         font-family: serif;
         font-size: 14px;
         vertical-align: middle;
@@ -1367,14 +1495,14 @@ body.transitioning .next {
             }}
             disabled={isRecognizing || isPreparing}
           >
-            <Text style={styles.selectSurahButtonText}>Pilih Surat</Text>
+            <Text style={styles.selectSurahButtonText}>{t("speech_select_surah")}</Text>
           </Pressable>
         </View>
 
         {/* DAFTAR SURAT YANG MUNCUL SETELAH TOMBOL PILIH SURAT DITEKAN */}
         {isSurahPickerVisible ? (
           <View style={styles.completedSurahCard}>
-            <Text style={styles.completedSurahTitle}>Pilih Surat Juz Amma</Text>
+            <Text style={styles.completedSurahTitle}>{t("speech_select_juz_amma")}</Text>
 
             {SURAH_OPTIONS.map((surah, surahIndex) => {
               const isCurrentSurah = surahIndex === currentSurahIndex;
@@ -1396,7 +1524,7 @@ body.transitioning .next {
                     ]}
                   >
                     {surah.number}. {surah.name}
-                    {isCurrentSurah ? " — Sedang dibaca" : ""}
+                    {isCurrentSurah ? t("speech_reading_now") : ""}
                   </Text>
                 </Pressable>
               );
@@ -1410,11 +1538,13 @@ body.transitioning .next {
         <View style={styles.currentAyahCard}>
           <View style={styles.cardHeaderRow}>
             <Text style={styles.cardHeaderText}>
-              Surat {activeSurah.number}
+              {tr("speech_surah_label", { number: activeSurah.number })}
             </Text>
 
             <View style={styles.ayahHeaderRight}>
-              <Text style={styles.cardHeaderText}>Ayat {activeVerse.ayah}</Text>
+              <Text style={styles.cardHeaderText}>
+                {tr("speech_ayah_label", { number: activeVerse.ayah })}
+              </Text>
 
               <Pressable
                 style={styles.selectAyahButton}
@@ -1427,7 +1557,7 @@ body.transitioning .next {
                 }}
                 disabled={isRecognizing || isPreparing || isVerseTransitioning}
               >
-                <Text style={styles.selectAyahButtonText}>Pilih Ayat</Text>
+                <Text style={styles.selectAyahButtonText}>{t("speech_select_ayah")}</Text>
               </Pressable>
             </View>
           </View>
@@ -1448,7 +1578,7 @@ body.transitioning .next {
         {isAyahPickerVisible ? (
           <View style={styles.ayahPickerCard}>
             <Text style={styles.completedSurahTitle}>
-              Pilih Ayat {activeSurah.name}
+              {tr("speech_select_ayah_title", { name: activeSurah.name })}
             </Text>
 
             <View style={styles.ayahButtonContainer}>
@@ -1507,10 +1637,10 @@ body.transitioning .next {
             {/* TULISAN STATUS PANEL REKAMAN */}
             <Text style={styles.recordingText}>
               {isVerseTransitioning
-                ? "Bacaan benar, lanjut ke ayat berikutnya..."
+                ? t("speech_correct_next")
                 : isPreparing
-                  ? "Menyiapkan mikrofon..."
-                  : "Sedang merekam..."}
+                  ? t("speech_preparing_mic")
+                  : t("speech_recording")}
             </Text>
 
             {/* TOMBOL BERHENTI HANYA MUNCUL SAAT BENAR-BENAR MEREKAM */}
@@ -1547,18 +1677,20 @@ body.transitioning .next {
             {isPreparing ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
-              <Text style={styles.recordButtonText}>Rekam</Text>
+              <Text style={styles.recordButtonText}>{t("speech_record")}</Text>
             )}
           </Pressable>
         )}
 
         {/* PESAN STATUS: MENDENGARKAN, SALAH, BENAR, ATAU BELUM SELESAI */}
-        <Text style={styles.statusText}>{statusMessage}</Text>
+        <Text style={styles.statusText}>
+          {statusMessage || t("speech_not_started")}
+        </Text>
 
         {/* ================================================== */}
         {/* BAGIAN TEKS TERDENGAR */}
         {/* ================================================== */}
-        <Text style={styles.sectionTitle}>Teks Terdengar</Text>
+        <Text style={styles.sectionTitle}>{t("speech_heard_text")}</Text>
 
         <View style={styles.resultCard}>
           <Text
@@ -1571,256 +1703,358 @@ body.transitioning .next {
           </Text>
         </View>
       </ScrollView>
+
+      {/* ================================================== */}
+      {/* MODAL NOTIFIKASI (PENGGANTI ALERT DEFAULT) */}
+      {/* ================================================== */}
+      <Modal
+        visible={notification !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={closeNotification}
+      >
+        <View
+          style={[
+            styles.notificationOverlay,
+            { backgroundColor: colors.modalOverlay },
+          ]}
+        >
+          <View
+            style={[styles.notificationCard, { backgroundColor: colors.card }]}
+          >
+            <View
+              style={[
+                styles.notificationIcon,
+                { backgroundColor: colors.inputBg },
+              ]}
+            >
+              <Ionicons name="notifications" size={32} color={colors.isDark ? "#8fb4ff" : "#2563eb"} />
+            </View>
+
+            <Text
+              style={[styles.notificationTitle, { color: colors.text }]}
+            >
+              {notification?.title}
+            </Text>
+
+            <Text
+              style={[styles.notificationMessage, { color: colors.subtext }]}
+            >
+              {notification?.message}
+            </Text>
+
+            <Pressable
+              style={styles.notificationCloseButton}
+              onPress={closeNotification}
+            >
+              <Text style={styles.notificationCloseButtonText}>
+                {t("speech_close")}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 // ============================================================
-// 7. STYLE TAMPILAN
+// 7. STYLE TAMPILAN (mengikuti tema gelap/terang aplikasi)
 // ============================================================
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#0b0f17",
-  },
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 36,
-    paddingBottom: 40,
-  },
-  titleRow: {
-    position: "relative",
-    minHeight: 46,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  surahTitle: {
-    color: "#f2f5fb",
-    fontSize: 28,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  // Style tombol Pilih Surat.
-  selectSurahButton: {
-    position: "absolute",
-    right: 0,
-    paddingHorizontal: 11,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: "#242b3a",
-  },
-  selectSurahButtonText: {
-    color: "#e8ecf4",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  // Style daftar pilihan surat.
-  completedSurahCard: {
-    marginTop: 12,
-    padding: 14,
-    borderRadius: 14,
-    backgroundColor: "#151a24",
-  },
-  completedSurahTitle: {
-    color: "#e8ecf4",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  completedSurahButton: {
-    marginTop: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    borderRadius: 9,
-    backgroundColor: "#202736",
-  },
-  completedSurahButtonText: {
-    color: "#8fb4ff",
-    fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  // Style surat yang sedang aktif di daftar surat.
-  currentSurahSelection: {
-    backgroundColor: "#273248",
-  },
-  currentSurahSelectionText: {
-    color: "#aeb7c8",
-  },
-  // Style kartu yang menampilkan tiga ayat.
-  currentAyahCard: {
-    marginTop: 28,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    borderRadius: 22,
-    backgroundColor: "#151a24",
-  },
-  cardHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  cardHeaderText: {
-    color: "#f2f5fb",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  ayahHeaderRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  // Style tombol Pilih Ayat.
-  selectAyahButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: "#4f46b8",
-  },
-  selectAyahButtonText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  // Style kartu WebView tiga ayat.
-  quranWebView: {
-    height: 330,
-    marginTop: 16,
-    backgroundColor: "transparent",
-  },
-  // Style daftar pilihan ayat.
-  ayahPickerCard: {
-    marginTop: 12,
-    padding: 14,
-    borderRadius: 14,
-    backgroundColor: "#151a24",
-  },
-  ayahButtonContainer: {
-    marginTop: 10,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  ayahSelectionButton: {
-    width: 42,
-    height: 42,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 9,
-    backgroundColor: "#202736",
-  },
-  ayahSelectionButtonText: {
-    color: "#8fb4ff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  currentAyahSelection: {
-    backgroundColor: "#273248",
-  },
-  currentAyahSelectionText: {
-    color: "#aeb7c8",
-  },
-  // Style tombol Rekam sebelum proses dimulai.
-  recordButton: {
-    alignSelf: "center",
-    minWidth: 104,
-    marginTop: 36,
-    paddingHorizontal: 22,
-    paddingVertical: 11,
-    borderRadius: 8,
-    backgroundColor: "#4f7cff",
-  },
-  disabledRecordButton: {
-    backgroundColor: "#4a5261",
-  },
-  recordButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  // Style panel animasi ketika sedang merekam.
-  recordingPanel: {
-    marginTop: 36,
-    paddingVertical: 10,
-    alignItems: "center",
-  },
-  waveformContainer: {
-    height: 58,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 5,
-  },
-  waveBar: {
-    width: 6,
-    borderRadius: 4,
-    backgroundColor: "#4d8de8",
-  },
-  recordingText: {
-    marginTop: 14,
-    color: "#d83b3b",
-    fontSize: 16,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  // Style tombol berhenti berbentuk lingkaran merah.
-  circularStopButton: {
-    width: 86,
-    height: 86,
-    marginTop: 22,
-    borderRadius: 43,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ef4444",
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 5,
+const createStyles = (colors: ThemeColors) => {
+  const accent = colors.isDark ? "#8fb4ff" : "#2563eb";
+
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
     },
-    shadowOpacity: 0.28,
-    shadowRadius: 6,
-    elevation: 8,
-  },
-  stopSquare: {
-    width: 30,
-    height: 30,
-    borderRadius: 5,
-    backgroundColor: "#ffffff",
-  },
-  statusText: {
-    marginTop: 10,
-    color: "#f2f5fb",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  // Style judul Teks Terdengar.
-  sectionTitle: {
-    marginTop: 28,
-    color: "#f2f5fb",
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  // Style kotak Teks Terdengar.
-  resultCard: {
-    minHeight: 160,
-    marginTop: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 20,
-    borderRadius: 22,
-    backgroundColor: "#151a24",
-  },
-  heardTextValue: {
-    marginTop: 10,
-    color: "#7fb0ff",
-    fontSize: 28,
-    lineHeight: 48,
-    textAlign: "right",
-    writingDirection: "rtl",
-  },
-  // Indikator saat berpindah ayat atau menyiapkan mikrofon.
-  preparingIndicator: {
-    marginTop: 22,
-  },
-});
+    container: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+      paddingTop: 36,
+      paddingBottom: 40,
+    },
+    titleRow: {
+      position: "relative",
+      minHeight: 46,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    surahTitle: {
+      color: colors.text,
+      fontSize: 28,
+      fontWeight: "500",
+      textAlign: "center",
+    },
+    // Style tombol Pilih Surat.
+    selectSurahButton: {
+      position: "absolute",
+      right: 0,
+      paddingHorizontal: 11,
+      paddingVertical: 8,
+      borderRadius: 8,
+      backgroundColor: colors.inputBg,
+    },
+    selectSurahButtonText: {
+      color: colors.text,
+      fontSize: 12,
+      fontWeight: "600",
+    },
+    // Style daftar pilihan surat.
+    completedSurahCard: {
+      marginTop: 12,
+      padding: 14,
+      borderRadius: 14,
+      backgroundColor: colors.card,
+    },
+    completedSurahTitle: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    completedSurahButton: {
+      marginTop: 10,
+      paddingHorizontal: 14,
+      paddingVertical: 11,
+      borderRadius: 9,
+      backgroundColor: colors.inputBg,
+    },
+    completedSurahButtonText: {
+      color: accent,
+      fontSize: 14,
+      fontWeight: "700",
+      textAlign: "center",
+    },
+    // Style surat yang sedang aktif di daftar surat.
+    currentSurahSelection: {
+      backgroundColor: colors.border,
+    },
+    currentSurahSelectionText: {
+      color: colors.subtext,
+    },
+    // Style kartu yang menampilkan tiga ayat.
+    currentAyahCard: {
+      marginTop: 28,
+      paddingHorizontal: 18,
+      paddingVertical: 16,
+      borderRadius: 22,
+      backgroundColor: colors.card,
+    },
+    cardHeaderRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    cardHeaderText: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: "500",
+    },
+    ayahHeaderRight: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    // Style tombol Pilih Ayat.
+    selectAyahButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 8,
+      backgroundColor: "#4f46b8",
+    },
+    selectAyahButtonText: {
+      color: "#ffffff",
+      fontSize: 12,
+      fontWeight: "700",
+    },
+    // Style kartu WebView tiga ayat.
+    quranWebView: {
+      height: 330,
+      marginTop: 16,
+      backgroundColor: "transparent",
+    },
+    // Style daftar pilihan ayat.
+    ayahPickerCard: {
+      marginTop: 12,
+      padding: 14,
+      borderRadius: 14,
+      backgroundColor: colors.card,
+    },
+    ayahButtonContainer: {
+      marginTop: 10,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    ayahSelectionButton: {
+      width: 42,
+      height: 42,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 9,
+      backgroundColor: colors.inputBg,
+    },
+    ayahSelectionButtonText: {
+      color: accent,
+      fontSize: 15,
+      fontWeight: "700",
+    },
+    currentAyahSelection: {
+      backgroundColor: colors.border,
+    },
+    currentAyahSelectionText: {
+      color: colors.subtext,
+    },
+    // Style tombol Rekam sebelum proses dimulai.
+    recordButton: {
+      alignSelf: "center",
+      minWidth: 104,
+      marginTop: 36,
+      paddingHorizontal: 22,
+      paddingVertical: 11,
+      borderRadius: 8,
+      backgroundColor: "#4f7cff",
+    },
+    disabledRecordButton: {
+      backgroundColor: colors.border,
+    },
+    recordButtonText: {
+      color: "#ffffff",
+      fontSize: 16,
+      fontWeight: "700",
+      textAlign: "center",
+    },
+    // Style panel animasi ketika sedang merekam.
+    recordingPanel: {
+      marginTop: 36,
+      paddingVertical: 10,
+      alignItems: "center",
+    },
+    waveformContainer: {
+      height: 58,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 5,
+    },
+    waveBar: {
+      width: 6,
+      borderRadius: 4,
+      backgroundColor: "#4d8de8",
+    },
+    recordingText: {
+      marginTop: 14,
+      color: "#d83b3b",
+      fontSize: 16,
+      fontWeight: "700",
+      textAlign: "center",
+    },
+    // Style tombol berhenti berbentuk lingkaran merah.
+    circularStopButton: {
+      width: 86,
+      height: 86,
+      marginTop: 22,
+      borderRadius: 43,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#ef4444",
+      shadowColor: "#000000",
+      shadowOffset: {
+        width: 0,
+        height: 5,
+      },
+      shadowOpacity: 0.28,
+      shadowRadius: 6,
+      elevation: 8,
+    },
+    stopSquare: {
+      width: 30,
+      height: 30,
+      borderRadius: 5,
+      backgroundColor: "#ffffff",
+    },
+    statusText: {
+      marginTop: 10,
+      color: colors.text,
+      fontSize: 15,
+      textAlign: "center",
+    },
+    // Style judul Teks Terdengar.
+    sectionTitle: {
+      marginTop: 28,
+      color: colors.text,
+      fontSize: 18,
+      fontWeight: "500",
+    },
+    // Style kotak Teks Terdengar.
+    resultCard: {
+      minHeight: 160,
+      marginTop: 14,
+      paddingHorizontal: 18,
+      paddingVertical: 20,
+      borderRadius: 22,
+      backgroundColor: colors.card,
+    },
+    heardTextValue: {
+      marginTop: 10,
+      color: accent,
+      fontSize: 28,
+      lineHeight: 48,
+      textAlign: "right",
+      writingDirection: "rtl",
+    },
+    // Indikator saat berpindah ayat atau menyiapkan mikrofon.
+    preparingIndicator: {
+      marginTop: 22,
+    },
+    // ==========================================================
+    // Style modal notifikasi pengganti Alert default.
+    // ==========================================================
+    notificationOverlay: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    notificationCard: {
+      width: "84%",
+      maxWidth: 360,
+      borderRadius: 18,
+      paddingHorizontal: 22,
+      paddingVertical: 26,
+      alignItems: "center",
+    },
+    notificationIcon: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 14,
+    },
+    notificationTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      textAlign: "center",
+    },
+    notificationMessage: {
+      marginTop: 8,
+      fontSize: 14,
+      lineHeight: 21,
+      textAlign: "center",
+    },
+    notificationCloseButton: {
+      marginTop: 20,
+      paddingHorizontal: 30,
+      paddingVertical: 10,
+      borderRadius: 10,
+      backgroundColor: "#4f7cff",
+    },
+    notificationCloseButtonText: {
+      color: "#ffffff",
+      fontSize: 15,
+      fontWeight: "700",
+    },
+  });
+};

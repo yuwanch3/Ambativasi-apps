@@ -16,13 +16,14 @@ export interface SoalAI {
 export async function generateSoalDirectGemini(
   sumberData: string,
   jumlahSoal: number = 10,
-  bahasaSoal: string = "Indonesia"
+  bahasaSoal: string = "Indonesia",
+  ringkasanMateri: string = ""
 ): Promise<SoalAI[]> {
   try {
     const response = await apiFetch(`${API_URL}/generate-soal.php`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sumberData, jumlahSoal, bahasaSoal }),
+      body: JSON.stringify({ sumberData, jumlahSoal, bahasaSoal, ringkasanMateri }),
     });
 
     const data = await response.json();

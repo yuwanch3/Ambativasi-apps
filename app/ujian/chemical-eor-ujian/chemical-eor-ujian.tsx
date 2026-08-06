@@ -143,13 +143,42 @@ export default function MateriScreen() {
   const levels = [
     {
       id: 1,
-      image: require("../../../assets/icons/icon-dasar.png"),
-      judul: language === "id" ? "Dasar" : "Basic",
+      image: require("../../../assets/icons/icon-Chemical-EOR.png"),
+      judul:
+        language === "id"
+          ? "Surfaktan (BAB II)"
+          : "Surfactant (Chapter II)",
       sub:
         language === "id"
-          ? "Ujian Materi Chemical EOR Dasar"
-          : "Basic Chemical EOR Exam",
-      path: "/ujian/chemical-eor-ujian/dasar/ujian-chemical-eor",
+          ? "Ujian Materi Surfaktan EOR"
+          : "Surfactant EOR Exam",
+      path: "/ujian/chemical-eor-ujian/dasar/ujian-chemical-eor?sumber_data=CHEMICAL_EOR_SURFAKTAN&judul_bab=Surfaktan",
+    },
+    {
+      id: 2,
+      image: require("../../../assets/icons/icon-Chemical-EOR.png"),
+      judul:
+        language === "id"
+          ? "Alkaline (BAB III)"
+          : "Alkaline (Chapter III)",
+      sub:
+        language === "id"
+          ? "Ujian Materi Alkaline EOR"
+          : "Alkaline EOR Exam",
+      path: "/ujian/chemical-eor-ujian/dasar/ujian-chemical-eor?sumber_data=CHEMICAL_EOR_ALKALINE&judul_bab=Alkaline",
+    },
+    {
+      id: 3,
+      image: require("../../../assets/icons/icon-Chemical-EOR.png"),
+      judul:
+        language === "id"
+          ? "Polimer (BAB IV)"
+          : "Polymer (Chapter IV)",
+      sub:
+        language === "id"
+          ? "Ujian Materi Polimer EOR"
+          : "Polymer EOR Exam",
+      path: "/ujian/chemical-eor-ujian/dasar/ujian-chemical-eor?sumber_data=CHEMICAL_EOR_POLIMER&judul_bab=Polimer",
     },
   ];
 

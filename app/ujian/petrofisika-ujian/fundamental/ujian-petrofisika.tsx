@@ -27,6 +27,9 @@ import { Sidebar } from "../../../../components/sidebar";
 // 💡 IMPORT DIRECT GEMINI SERVICE (50 Soal Ujian)
 import { generateSoalDirectGemini } from "../../../../src/service/geminiService";
 
+// 💡 IMPORT RINGKASAN MATERI (AGAR SOAL SESUAI ISI BUKU)
+import { getRingkasanMateri } from "../../../../src/data/ringkasanMateri";
+
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../context/ThemeContext";
 import { useLanguage } from "../../../../context/LanguageContext";
@@ -261,14 +264,15 @@ export default function SubUjianPetrofisika() {
     }
   };
 
-  // 💡 FUNGSI DIRECT GEMINI (50 SOAL UJIAN PETROFISIKA FUNDAMENTAL)
+  // 💡 FUNGSI DIRECT GEMINI (50 SOAL UJIAN PETROFISIKA)
   const ambilSoalLangsungDariAI = async () => {
     try {
       setLoadingAI(true);
-      const finalSumberData = sumber_data ? String(sumber_data) : "PETROFISIKA_FUNDAMENTAL";
+      const finalSumberData = sumber_data ? String(sumber_data) : "PETROFISIKA_SERI1_POROSITAS";
+      const ringkasan = getRingkasanMateri(finalSumberData);
 
       // Meminta 50 Butir Soal Ujian dari Gemini API
-      const dataSoal = await generateSoalDirectGemini(finalSumberData, 50, "Indonesia");
+      const dataSoal = await generateSoalDirectGemini(finalSumberData, 50, "Indonesia", ringkasan);
       setListSoal(dataSoal);
     } catch (error: any) {
       Alert.alert("Error Gemini", error.message || "Gagal memuat soal ujian dari AI.");
@@ -346,9 +350,9 @@ export default function SubUjianPetrofisika() {
       router.push({
         pathname: "./review-Jawaban-ujian",
         params: { 
-          judul_bab: String(judul_bab || (language === "id" ? "Ujian Petrofisika Fundamental" : "Petrophysics Fundamental Exam")), 
+          judul_bab: String(judul_bab || (language === "id" ? "Ujian Petrofisika" : "Petrophysics Exam")), 
           tipe_sumber: tipe_sumber ? String(tipe_sumber) : "text", 
-          sumber_data: sumber_data ? String(sumber_data) : "PETROFISIKA_FUNDAMENTAL" 
+          sumber_data: sumber_data ? String(sumber_data) : "PETROFISIKA_SERI1_POROSITAS" 
         },
       });
     } catch (e) {
@@ -391,8 +395,8 @@ export default function SubUjianPetrofisika() {
         <ActivityIndicator size="large" color="#16A34A" />
         <Text style={[styles.teksLoading, { color: colors.subtext }]}>
           {language === "id"
-            ? "Sedang meracik 50 butir soal Ujian Petrofisika Fundamental..."
-            : "Generating 50 exam questions for Petrophysics Fundamental..."}
+            ? "Sedang meracik 50 butir soal ujian Petrofisika..."
+            : "Generating 50 Petrophysics exam questions..."}
         </Text>
       </View>
     );
@@ -492,7 +496,7 @@ export default function SubUjianPetrofisika() {
         </TouchableOpacity>
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          {judul_bab || (language === "id" ? "Ujian Petrofisika Fundamental" : "Petrophysics Fundamental Exam")}
+          {judul_bab || (language === "id" ? "Ujian Petrofisika" : "Petrophysics Exam")}
         </Text>
 
         {/* --- NAVIGASI NOMOR SOAL --- */}
