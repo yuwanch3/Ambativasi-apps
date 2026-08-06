@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -19,8 +19,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Navbar } from "../../components/navbar";
 import { Sidebar } from "../../components/sidebar";
-import { useTheme } from "../../context/ThemeContext";
+import API_URL, { apiFetch } from "../../config";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTheme } from "../../context/ThemeContext";
 import {
   getSubjectSummary,
   SubjectSummary,
@@ -28,7 +29,6 @@ import {
 import { getCurrentStreak, getLast7Days } from "../../src/utils/streakTracker";
 
 const { width } = Dimensions.get("window");
-import API_URL, { apiFetch } from "../../config";
 
 const SUBJECT_ICONS = {
   chemical: { name: "flask" as const, color: "#16A34A", bg: "#DCFCE7" },
@@ -281,7 +281,8 @@ export default function HomeScreen() {
             </View>
             <View>
               <Text style={[styles.streakNumber, { color: colors.text }]}>
-                {streak} {language === "id" ? "hari" : `day${streak !== 1 ? "s" : ""}`}
+                {streak}{" "}
+                {language === "id" ? "hari" : `day${streak !== 1 ? "s" : ""}`}
               </Text>
               <Text style={[styles.streakLabel, { color: colors.subtext }]}>
                 {streakLabel}
@@ -557,6 +558,36 @@ export default function HomeScreen() {
             </Text>
             <Text style={[styles.actionSub, { color: colors.subtext }]}>
               {t("start_exam")}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.actionCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+            onPress={() => router.push("/speech" as any)} // TODO: ganti route sesuai kebutuhan
+            activeOpacity={0.8}
+          >
+            <View
+              style={[
+                styles.actionIcon,
+                { backgroundColor: colors.isDark ? "#78350F" : "#FEF3C7" },
+              ]}
+            >
+              <Image
+                source={require("../../assets/images/speech-arab-no-bg.png")}
+                style={styles.actionImg}
+                resizeMode="contain"
+              />
+            </View>
+            <Text style={[styles.actionTitle, { color: colors.text }]}>
+              {language === "id" ? "Bicara" : "Speech"}
+            </Text>
+            <Text style={[styles.actionSub, { color: colors.subtext }]}>
+              {language === "id"
+                ? "Latih Berbicaramu"
+                : "Practice Your Speaking"}
             </Text>
           </TouchableOpacity>
         </View>

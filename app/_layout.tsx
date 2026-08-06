@@ -8,7 +8,10 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 // --- IMPORT TEMA GLOBAL & CONTEXT ---
-import { ThemeProvider as CustomThemeProvider, useTheme } from "../context/ThemeContext";
+import {
+  ThemeProvider as CustomThemeProvider,
+  useTheme,
+} from "../context/ThemeContext";
 
 // 💡 IMPORT CONTEXT BAHASA GLOBAL
 import { LanguageProvider } from "../context/LanguageContext";
@@ -20,10 +23,10 @@ import { ChatProvider } from "../context/ChatContext";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 // --- IMPORT UNTUK NAVIGASI BAR & SYSTEM UI ANDROID ---
-import React, { useEffect } from "react";
-import { Platform, View } from "react-native";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SystemUI from "expo-system-ui";
+import React, { useEffect } from "react";
+import { Platform, View } from "react-native";
 
 const toastConfig = {
   success: (props: any) => (
@@ -79,15 +82,17 @@ function RootLayoutNav() {
 
       let timeoutId: ReturnType<typeof setTimeout>;
 
-      const subscription = NavigationBar.addVisibilityListener(({ visibility }) => {
-        if (visibility === "visible") {
-          if (timeoutId) clearTimeout(timeoutId);
+      const subscription = NavigationBar.addVisibilityListener(
+        ({ visibility }) => {
+          if (visibility === "visible") {
+            if (timeoutId) clearTimeout(timeoutId);
 
-          timeoutId = setTimeout(() => {
-            NavigationBar.setVisibilityAsync("hidden");
-          }, 3000); // 👈 Sembunyi lagi setelah 3 detik
-        }
-      });
+            timeoutId = setTimeout(() => {
+              NavigationBar.setVisibilityAsync("hidden");
+            }, 3000); // 👈 Sembunyi lagi setelah 3 detik
+          }
+        },
+      );
 
       return () => {
         subscription.remove();
@@ -117,7 +122,10 @@ function RootLayoutNav() {
 
           <Stack.Screen name="profile" options={{ headerShown: false }} />
 
-          <Stack.Screen name="share-progress" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="share-progress"
+            options={{ headerShown: false }}
+          />
 
           {/* Halaman Tilawah */}
 
@@ -210,7 +218,7 @@ function RootLayoutNav() {
 
           <Stack.Screen
             name="materi/chemical-eor/dasar/materiDasar"
-            options={{ headerShown: false}}
+            options={{ headerShown: false }}
           />
 
           <Stack.Screen
@@ -223,6 +231,12 @@ function RootLayoutNav() {
             options={{ headerShown: false }}
           />
 
+          <Stack.Screen name="speech/index" options={{ headerShown: false }} />
+
+          <Stack.Screen
+            name="speech/qur'an/index"
+            options={{ headerShown: false }}
+          />
         </Stack>
 
         <StatusBar style={colors.isDark ? "light" : "dark"} />
