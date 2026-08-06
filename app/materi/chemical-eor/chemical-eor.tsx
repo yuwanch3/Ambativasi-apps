@@ -21,10 +21,33 @@ export default function MateriScreen() {
   const levels = [
     {
       id: 1,
-      image: require("../../../assets/icons/icon-dasar.png"),
-      judul: language === "id" ? "Dasar" : "Basic",
-      sub: language === "id" ? "Tingkat Dasar" : "Basic Level",
-      path: "/materi/chemical-eor/dasar/materiDasar",
+      image: require("../../../assets/icons/icon-Chemical-EOR.png"),
+      judul: language === "id" ? "Surfaktan" : "Surfactant",
+      sub:
+        language === "id"
+          ? "IFT, Microemulsion & Screening Criteria"
+          : "IFT, Microemulsion & Screening Criteria",
+      path: "/materi/chemical-eor/babMateri?bab=surfaktan",
+    },
+    {
+      id: 2,
+      image: require("../../../assets/icons/icon-Chemical-EOR.png"),
+      judul: language === "id" ? "Alkaline" : "Alkaline",
+      sub:
+        language === "id"
+          ? "Caustic Flooding & Emulsifikasi"
+          : "Caustic Flooding & Emulsification",
+      path: "/materi/chemical-eor/babMateri?bab=alkaline",
+    },
+    {
+      id: 3,
+      image: require("../../../assets/icons/icon-Chemical-EOR.png"),
+      judul: language === "id" ? "Polimer" : "Polymer",
+      sub:
+        language === "id"
+          ? "Mobility Ratio, HPAM & Sweep Efficiency"
+          : "Mobility Ratio, HPAM & Sweep Efficiency",
+      path: "/materi/chemical-eor/babMateri?bab=polimer",
     },
   ];
 

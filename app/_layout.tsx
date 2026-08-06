@@ -1,8 +1,4 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider as NavigationThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -103,8 +99,10 @@ function RootLayoutNav() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <NavigationThemeProvider value={colors.isDark ? DarkTheme : DefaultTheme}>
-        <Stack initialRouteName="auth/login">
+      <Stack
+        initialRouteName="auth/login"
+        theme={colors.isDark ? DarkTheme : DefaultTheme}
+      >
           {/* Halaman Auth */}
           <Stack.Screen name="auth/login" options={{ headerShown: false }} />
           <Stack.Screen name="auth/register" options={{ headerShown: false }} />
@@ -162,6 +160,21 @@ function RootLayoutNav() {
           />
 
           <Stack.Screen
+            name="ujian/petrofisika-ujian/bab-list"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="ujian/petrofisika-ujian/fundamental/ujian-petrofisika"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="ujian/petrofisika-ujian/fundamental/review-Jawaban-ujian"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
             name="ujian/chemical-eor-ujian/chemical-eor-ujian"
             options={{ headerShown: false }}
           />
@@ -207,12 +220,42 @@ function RootLayoutNav() {
           />
 
           <Stack.Screen
+            name="materi/petrofisika/seriMateri"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="materi/petrofisika/pdfSeri"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="materi/petrofisika/videoSeri"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
             name="materi/petrofisika/fundamental/materiFundamental"
             options={{ headerShown: false }}
           />
 
           <Stack.Screen
             name="materi/chemical-eor/chemical-eor"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="materi/chemical-eor/babMateri"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="materi/chemical-eor/pdfBab"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="materi/chemical-eor/videoBab"
             options={{ headerShown: false }}
           />
 
@@ -242,7 +285,6 @@ function RootLayoutNav() {
         <StatusBar style={colors.isDark ? "light" : "dark"} />
 
         <Toast config={toastConfig} />
-      </NavigationThemeProvider>
     </View>
   );
 }

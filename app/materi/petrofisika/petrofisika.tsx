@@ -21,10 +21,33 @@ export default function MateriScreen() {
   const levels = [
     {
       id: 1,
-      image: require("../../../assets/icons/icon-fundamental.png"),
-      judul: "Fundamental",
-      sub: language === "id" ? "Dasar" : "Basic Level",
-      path: "/materi/petrofisika/fundamental/materiFundamental",
+      image: require("../../../assets/icons/icon-petrophysics.png"),
+      judul: language === "id" ? "Seri 1: Routine Core Analysis" : "Series 1: Routine Core Analysis",
+      sub:
+        language === "id"
+          ? "Porositas, Permeabilitas & Saturasi Air"
+          : "Porosity, Permeability & Water Saturation",
+      path: "/materi/petrofisika/seriMateri?seri=seri-1",
+    },
+    {
+      id: 2,
+      image: require("../../../assets/icons/icon-petrophysics.png"),
+      judul: language === "id" ? "Seri 2: Special Core Analysis" : "Series 2: Special Core Analysis",
+      sub:
+        language === "id"
+          ? "Wettability, IFT, Capillary Pressure & Kr"
+          : "Wettability, IFT, Capillary Pressure & Kr",
+      path: "/materi/petrofisika/seriMateri?seri=seri-2",
+    },
+    {
+      id: 3,
+      image: require("../../../assets/icons/icon-petrophysics.png"),
+      judul: language === "id" ? "Seri 3: Digital Core Analysis" : "Series 3: Digital Core Analysis",
+      sub:
+        language === "id"
+          ? "Digital Rock Physics, Simulasi & Software"
+          : "Digital Rock Physics, Simulation & Software",
+      path: "/materi/petrofisika/seriMateri?seri=seri-3",
     },
   ];
 

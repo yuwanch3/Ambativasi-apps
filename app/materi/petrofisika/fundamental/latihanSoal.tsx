@@ -32,6 +32,9 @@ import { Sidebar } from "../../../../components/sidebar";
 // 💡 IMPORT DIRECT GEMINI SERVICE
 import { generateSoalDirectGemini } from "../../../../src/service/geminiService";
 
+// 💡 IMPORT RINGKASAN MATERI UNTUK SOAL LEBIH SESUAI ISI BUKU
+import { getRingkasanMateri } from "../../../../src/data/ringkasanMateri";
+
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../context/ThemeContext";
 import { useLanguage } from "../../../../context/LanguageContext";
@@ -298,6 +301,10 @@ export default function SubUjianPetrofisika() {
       const dataSoal = await generateSoalDirectGemini(
         sumber_data ? String(sumber_data) : "petrofisika_fundamental",
         10,
+        "Indonesia",
+        getRingkasanMateri(
+          String(sumber_data || "petrofisika_fundamental"),
+        ),
       );
       setListSoal(dataSoal);
     } catch (error: any) {
@@ -452,8 +459,8 @@ export default function SubUjianPetrofisika() {
         <ActivityIndicator size="large" color="#16A34A" />
         <Text style={[styles.teksLoading, { color: colors.subtext }]}>
           {language === "id"
-            ? "Sedang meracik 10 butir soal Petrofisika Fundamental via AI..."
-            : "Generating 10 Fundamental Petrophysics practice questions via AI..."}
+            ? "Sedang meracik 10 butir soal via AI..."
+            : "Generating 10 practice questions via AI..."}
         </Text>
       </View>
     );

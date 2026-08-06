@@ -57,6 +57,35 @@ export const RINGKASAN_MATERI: Record<string, string> = {
     "Kompresibilitas merupakan ukuran perubahan volume relatif dari fluida atau padatan sebagai tanggapan terhadap perubahan tekanan atau tekanan rata-rata. Kompresibilitas terbagi menjadi tiga jenis: kompresibilitas matriks (Cm), kompresibilitas bulk (Cf), dan kompresibilitas formasi/kompresibilitas volume pori (Cb). Kompresibilitas formasi didefinisikan sebagai Cf = -(1/V)(dV/dP), di mana Cf = koefisien (isothermal) kompresibilitas, V = volume, dan P = tekanan (psia). Kompresibilitas formasi sangat penting untuk menentukan deplesi fluida pori, perubahan stress internal batuan, perubahan volume pori, dan perubahan stress pada volume matriks dan volume bulk. Faktor-faktor yang mempengaruhi besar kecilnya kompresibilitas adalah volume (V), perubahan volume (dV), dan perubahan tekanan (dP): semakin besar volumenya maka nilai kompresibilitas semakin kecil; semakin besar perubahan volumenya maka kompresibilitas semakin besar; dan semakin besar perubahan tekanannya maka nilai kompresibilitas semakin kecil. Variasi volume pori terjadi karena peningkatan beban bertahap pada sampel yang mewakili efek overburden pada lapisan, sedangkan tekanan pori tetap pada tekanan atmosfer dan suhu kamar. Fatt (1958) dan Hall (1953) menunjukkan bahwa suhu tidak mempengaruhi kompresibilitas pori. Untuk mengevaluasi akurasi pengukuran volume pori, pengujian dilakukan dengan silinder baja padat pada tekanan pembatas 1000 psi dan cakram kalibrasi; volume butiran tidak berubah saat tekanan pembatas diterapkan, dan pengujian dilakukan pada sampel batuan kering. Asumsi pendekatan: kompresibilitas pori reservoir hanya bergantung pada stress efektif berdasarkan teori poroelastisitas, dan ekspansi butir karena pengurangan tekanan pori diabaikan sehingga pengurangan volume pori dan volume sama.",
 };
 
+// ==========================================
+// RINGKASAN TINGKAT SERI PETROFISIKA
+// (gabungan ringkasan seluruh BAB dalam satu seri)
+// ==========================================
+export const RINGKASAN_SERI_PETROFISIKA: Record<string, string> = {
+  PETROFISIKA_SERI1: [
+    RINGKASAN_MATERI.PETROFISIKA_SERI1_POROSITAS,
+    RINGKASAN_MATERI.PETROFISIKA_SERI1_PERMEABILITAS,
+    RINGKASAN_MATERI.PETROFISIKA_SERI1_COMPRESSIBILITY,
+    RINGKASAN_MATERI.PETROFISIKA_SERI1_SALINITAS,
+    RINGKASAN_MATERI.PETROFISIKA_SERI1_WATER_SATURATION,
+  ].join(" "),
+  PETROFISIKA_SERI2: [
+    RINGKASAN_MATERI.PETROFISIKA_SERI2_WETTABILITY,
+    RINGKASAN_MATERI.PETROFISIKA_SERI2_RESISTIVITY,
+    RINGKASAN_MATERI.PETROFISIKA_SERI2_INTERFACIAL_TENSION,
+    RINGKASAN_MATERI.PETROFISIKA_SERI2_CAPILLARY_PRESSURE,
+    RINGKASAN_MATERI.PETROFISIKA_SERI2_RELATIVE_PERMEABILITY,
+  ].join(" "),
+  PETROFISIKA_SERI3: [
+    RINGKASAN_MATERI.PETROFISIKA_SERI3_DIGITAL_ROCK_PHYSICS,
+    RINGKASAN_MATERI.PETROFISIKA_SERI3_KOMPUTASI_SOFTWARE,
+    RINGKASAN_MATERI.PETROFISIKA_SERI3_POROSITAS,
+    RINGKASAN_MATERI.PETROFISIKA_SERI3_PERMEABILITAS,
+    RINGKASAN_MATERI.PETROFISIKA_SERI3_SATURASI_AIR,
+    RINGKASAN_MATERI.PETROFISIKA_SERI3_KOMPRESIBILITAS,
+  ].join(" "),
+};
+
 export function getRingkasanMateri(sumberData: string): string {
-  return RINGKASAN_MATERI[sumberData] || "";
+  return RINGKASAN_MATERI[sumberData] || RINGKASAN_SERI_PETROFISIKA[sumberData] || "";
 }
