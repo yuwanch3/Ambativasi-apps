@@ -10,9 +10,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import API_URL, { apiFetch } from "../../config";
@@ -194,7 +194,7 @@ export default function LeaderboardScreen() {
           <Text style={[styles.errorTitle, { color: colors.text }]}>
             {language === "id" ? "Gagal memuat data" : "Failed to load data"}
           </Text>
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.retryBtn}
             onPress={() => {
               setLoading(true);
@@ -204,7 +204,7 @@ export default function LeaderboardScreen() {
             <Text style={styles.retryBtnText}>
               {language === "id" ? "Coba Lagi" : "Retry"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
       ) : (
         <ScrollView

@@ -20,9 +20,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -448,19 +448,22 @@ export default function SubUjianChemicalEOR() {
 
   if (loadingSession || loadingAI) {
     return (
-      <View
-        style={[
-          styles.loadingContainer,
-          { backgroundColor: colors.background },
-        ]}
-      >
-        <ActivityIndicator size="large" color="#16A34A" />
-        <Text style={[styles.teksLoading, { color: colors.subtext }]}>
-          {language === "id"
-            ? "Sedang meracik 10 butir soal via AI..."
-            : "Generating 10 practice questions via AI..."}
-        </Text>
-      </View>
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: colors.background },
+          ]}
+        >
+          <ActivityIndicator size="large" color="#16A34A" />
+          <Text style={[styles.teksLoading, { color: colors.subtext }]}>
+            {language === "id"
+              ? "Sedang meracik 10 butir soal via AI..."
+              : "Generating 10 practice questions via AI..."}
+          </Text>
+        </View>
+      </>
     );
   }
 
@@ -497,7 +500,7 @@ export default function SubUjianChemicalEOR() {
         <Text style={[styles.teksPertanyaan, { color: colors.text }]}>
           {bagian[0]}
         </Text>
-        <TouchableOpacity
+        <SoundTouchableOpacity
           ref={dropZoneRef}
           onLayout={ukurDropZone}
           activeOpacity={0.8}
@@ -520,7 +523,7 @@ export default function SubUjianChemicalEOR() {
                 ? " Tarik Ke Sini "
                 : " Drag Here "}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
         <Text style={[styles.teksPertanyaan, { color: colors.text }]}>
           {bagian[1]}
         </Text>
@@ -572,7 +575,7 @@ export default function SubUjianChemicalEOR() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -590,7 +593,7 @@ export default function SubUjianChemicalEOR() {
 
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => handleBukaModalKeluar("back")}
         >
@@ -607,7 +610,7 @@ export default function SubUjianChemicalEOR() {
           >
             {language === "id" ? "Kembali ke BAB" : "Back to CHAPTER"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {judul_bab ||
@@ -624,7 +627,7 @@ export default function SubUjianChemicalEOR() {
             contentContainerStyle={styles.wrapperAngka}
           >
             {listSoal.map((_, indeks) => (
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 key={indeks}
                 style={[
                   styles.tombolAngka,
@@ -649,7 +652,7 @@ export default function SubUjianChemicalEOR() {
                 >
                   {indeks + 1}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             ))}
           </ScrollView>
         </View>
@@ -785,7 +788,7 @@ export default function SubUjianChemicalEOR() {
               Object.entries(soalSaatIni.pilihan).map(([abjad, teksOpsi]) => {
                 const isSelected = userHasPicked === abjad;
                 return (
-                  <TouchableOpacity
+                  <SoundTouchableOpacity
                     key={abjad}
                     disabled={isReadOnlyState}
                     style={[
@@ -841,7 +844,7 @@ export default function SubUjianChemicalEOR() {
                     >
                       {teksOpsi}
                     </Text>
-                  </TouchableOpacity>
+                  </SoundTouchableOpacity>
                 );
               })}
           </ScrollView>
@@ -849,7 +852,7 @@ export default function SubUjianChemicalEOR() {
 
         {/* --- TOMBOL NAVIGASI BAWAH --- */}
         <View style={styles.navigasiBawah}>
-          <TouchableOpacity
+          <SoundTouchableOpacity
             disabled={indeksAktif === 0}
             style={[styles.tombolNav, indeksAktif === 0 && { opacity: 0.4 }]}
             onPress={() => setIndeksAktif(indeksAktif - 1)}
@@ -857,26 +860,26 @@ export default function SubUjianChemicalEOR() {
             <Text style={styles.teksNav}>
               {language === "id" ? "◄ Sebelumnya" : "◄ Previous"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
           {indeksAktif === listSoal.length - 1 ? (
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.tombolNav, { backgroundColor: "#16A34A" }]}
               onPress={handleSelesaiKuis}
             >
               <Text style={styles.teksNav}>
                 {language === "id" ? "Selesai ✔" : "Finish ✔"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           ) : (
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.tombolNav}
               onPress={() => setIndeksAktif(indeksAktif + 1)}
             >
               <Text style={styles.teksNav}>
                 {language === "id" ? "Selanjutnya ►" : "Next ►"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           )}
         </View>
       </View>
@@ -937,7 +940,7 @@ export default function SubUjianChemicalEOR() {
                 ? "Selamat, kamu telah menyelesaikan kuis latihan Chemical EOR Dasar ini."
                 : "Congratulations, you have completed this Basic Chemical EOR practice quiz."}
             </Text>
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.modalButtonUtama}
               onPress={navigasiKeReview}
             >
@@ -946,8 +949,8 @@ export default function SubUjianChemicalEOR() {
                   ? "Lihat Review Jawaban ►"
                   : "View Answer Review ►"}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </SoundTouchableOpacity>
+            <SoundTouchableOpacity
               style={[
                 styles.modalButtonSekunder,
                 {
@@ -967,7 +970,7 @@ export default function SubUjianChemicalEOR() {
               >
                 {language === "id" ? "Kembali ke Bab" : "Back to Chapter"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </Animated.View>
         </View>
       </Modal>
@@ -998,7 +1001,7 @@ export default function SubUjianChemicalEOR() {
                 ? "Apakah kamu yakin ingin keluar? Seluruh progres saat ini akan hilang."
                 : "Are you sure you want to exit? All current progress will be lost."}
             </Text>
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.modalButtonUtama}
               onPress={handleTutupModalKeluar}
             >
@@ -1007,9 +1010,9 @@ export default function SubUjianChemicalEOR() {
                   ? "Tidak, Lanjutkan Latihan"
                   : "No, Continue Practice"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.modalButtonKeluarYa}
               onPress={() => {
                 setShowExitModal(false);
@@ -1031,7 +1034,7 @@ export default function SubUjianChemicalEOR() {
               <Text style={styles.modalButtonTextKeluarYa}>
                 {language === "id" ? "Ya, Saya Yakin Keluar" : "Yes, Exit"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </Animated.View>
         </View>
       </Modal>

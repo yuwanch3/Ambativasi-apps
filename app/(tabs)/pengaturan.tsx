@@ -16,9 +16,9 @@ import {
   Switch,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT TOAST NOTIFICATION
@@ -121,8 +121,18 @@ export default function PengaturanScreen() {
   const requestNotificationPermissions = async () => {
     try {
       if (Platform.OS === "android") {
+        // 💡 Hapus channel versi lama (sound channel tidak bisa diubah setelah dibuat
+        // sekali di Android). Channel baru dibuat fresh supaya sound "ding" aktif.
+        try {
+          await Notifications.deleteNotificationChannelAsync(
+            "study-reminder-channel-v4",
+          );
+        } catch (e) {
+          console.log("Channel lama tidak ada / gagal dihapus", e);
+        }
+
         await Notifications.setNotificationChannelAsync(
-          "study-reminder-channel-v4",
+          "study-reminder-channel-v5",
           {
             name: "Pengingat Belajar",
             importance: Notifications.AndroidImportance.MAX,
@@ -324,7 +334,7 @@ export default function PengaturanScreen() {
               type: Notifications.SchedulableTriggerInputTypes.DAILY,
               hour: item.hour,
               minute: item.minute,
-              channelId: "study-reminder-channel-v4", // 👈 Terhubung ke Notification Channel Android
+              channelId: "study-reminder-channel-v5", // 👈 Terhubung ke Notification Channel Android
             },
           });
         }
@@ -755,7 +765,7 @@ export default function PengaturanScreen() {
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("email")}
           >
@@ -776,11 +786,11 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("password")}
           >
@@ -801,7 +811,7 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
         {/* ==================== SEKSI 2: TAMPILAN & BAHASA ==================== */}
@@ -814,7 +824,7 @@ export default function PengaturanScreen() {
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("theme")}
           >
@@ -843,11 +853,11 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("language")}
           >
@@ -868,7 +878,7 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
         {/* ==================== SEKSI 3: NOTIFIKASI ==================== */}
@@ -881,7 +891,7 @@ export default function PengaturanScreen() {
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("notification")}
           >
@@ -912,7 +922,7 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
         {/* ==================== SEKSI 4: PENYIMPANAN ==================== */}
@@ -925,7 +935,7 @@ export default function PengaturanScreen() {
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <TouchableOpacity style={styles.rowItem} onPress={handleClearCache}>
+          <SoundTouchableOpacity style={styles.rowItem} onPress={handleClearCache}>
             <View
               style={[
                 styles.iconWrapper,
@@ -943,7 +953,7 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
         {/* ==================== SEKSI 5: BANTUAN & LEGALITAS ==================== */}
@@ -956,7 +966,7 @@ export default function PengaturanScreen() {
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("faq")}
           >
@@ -974,11 +984,11 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.rowItem}
             onPress={() => setActiveModal("privacy")}
           >
@@ -1000,7 +1010,7 @@ export default function PengaturanScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
         {/* ==================== FOOTER VERSI ==================== */}
@@ -1046,9 +1056,9 @@ export default function PengaturanScreen() {
               >
                 {language === "id" ? "Pengingat Belajar" : "Study Reminder"}
               </Text>
-              <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
                 <Ionicons name="close" size={24} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             {/* Master Switch Pengingat */}
@@ -1128,7 +1138,7 @@ export default function PengaturanScreen() {
                         trackColor={{ false: "#CBD5E1", true: "#86EFAC" }}
                         thumbColor={item.active ? "#16A34A" : "#F8FAFC"}
                       />
-                      <TouchableOpacity
+                      <SoundTouchableOpacity
                         style={{ marginLeft: 10 }}
                         onPress={() => handleDeleteReminder(item.id)}
                       >
@@ -1137,7 +1147,7 @@ export default function PengaturanScreen() {
                           size={20}
                           color="#EF4444"
                         />
-                      </TouchableOpacity>
+                      </SoundTouchableOpacity>
                     </View>
                   </View>
                 );
@@ -1192,24 +1202,24 @@ export default function PengaturanScreen() {
                     value={tempMinute}
                     onChangeText={setTempMinute}
                   />
-                  <TouchableOpacity
+                  <SoundTouchableOpacity
                     style={styles.btnAddTime}
                     onPress={handleAddReminder}
                   >
                     <Ionicons name="add" size={24} color="#FFF" />
-                  </TouchableOpacity>
+                  </SoundTouchableOpacity>
                 </View>
               </View>
             )}
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.btnPrimary, { marginTop: 12 }]}
               onPress={() => setActiveModal(null)}
             >
               <Text style={styles.btnPrimaryText}>
                 {language === "id" ? "Selesai" : "Done"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -1236,9 +1246,9 @@ export default function PengaturanScreen() {
               >
                 {t("clear_cache")}
               </Text>
-              <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
                 <Ionicons name="close" size={24} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             <Text
@@ -1261,7 +1271,7 @@ export default function PengaturanScreen() {
                 marginTop: 16,
               }}
             >
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalCancel,
                   {
@@ -1280,9 +1290,9 @@ export default function PengaturanScreen() {
                 >
                   {t("cancel")}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
 
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={styles.btnModalDanger}
                 onPress={confirmClearCache}
               >
@@ -1291,7 +1301,7 @@ export default function PengaturanScreen() {
                 >
                   {t("clear_cache")}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
           </View>
         </View>
@@ -1314,9 +1324,9 @@ export default function PengaturanScreen() {
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {t("change_password")}
               </Text>
-              <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
                 <Ionicons name="close" size={24} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             {/* Input Kata Sandi Lama */}
@@ -1336,7 +1346,7 @@ export default function PengaturanScreen() {
                 value={oldPassword}
                 onChangeText={setOldPassword}
               />
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={styles.eyeIconWrapper}
                 onPress={() => setShowOldPass(!showOldPass)}
               >
@@ -1345,7 +1355,7 @@ export default function PengaturanScreen() {
                   size={20}
                   color={colors.subtext}
                 />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             {/* Input Kata Sandi Baru */}
@@ -1369,7 +1379,7 @@ export default function PengaturanScreen() {
                 value={newPassword}
                 onChangeText={setNewPassword}
               />
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={styles.eyeIconWrapper}
                 onPress={() => setShowNewPass(!showNewPass)}
               >
@@ -1378,7 +1388,7 @@ export default function PengaturanScreen() {
                   size={20}
                   color={colors.subtext}
                 />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             {/* Input Konfirmasi Sandi Baru */}
@@ -1400,7 +1410,7 @@ export default function PengaturanScreen() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
               />
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={styles.eyeIconWrapper}
                 onPress={() => setShowConfirmPass(!showConfirmPass)}
               >
@@ -1409,10 +1419,10 @@ export default function PengaturanScreen() {
                   size={20}
                   color={colors.subtext}
                 />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.btnPrimary, submitting && { opacity: 0.7 }]}
               onPress={handleSavePassword}
               disabled={submitting}
@@ -1422,7 +1432,7 @@ export default function PengaturanScreen() {
               ) : (
                 <Text style={styles.btnPrimaryText}>{t("save_password")}</Text>
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -1444,9 +1454,9 @@ export default function PengaturanScreen() {
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {t("change_email")}
               </Text>
-              <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
                 <Ionicons name="close" size={24} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
             <TextInput
               style={[
@@ -1466,7 +1476,7 @@ export default function PengaturanScreen() {
               value={newEmail}
               onChangeText={setNewEmail}
             />
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.btnPrimary, submitting && { opacity: 0.7 }]}
               onPress={handleSaveEmail}
               disabled={submitting}
@@ -1476,7 +1486,7 @@ export default function PengaturanScreen() {
               ) : (
                 <Text style={styles.btnPrimaryText}>{t("save_email")}</Text>
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -1494,7 +1504,7 @@ export default function PengaturanScreen() {
               {t("select_display_mode")}
             </Text>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[
                 styles.selectOption,
                 { backgroundColor: colors.inputBg, borderColor: colors.border },
@@ -1512,9 +1522,9 @@ export default function PengaturanScreen() {
                   color={colors.isDark ? "#4ADE80" : "#16A34A"}
                 />
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[
                 styles.selectOption,
                 { backgroundColor: colors.inputBg, borderColor: colors.border },
@@ -1532,9 +1542,9 @@ export default function PengaturanScreen() {
                   color={colors.isDark ? "#4ADE80" : "#16A34A"}
                 />
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[
                 styles.selectOption,
                 { backgroundColor: colors.inputBg, borderColor: colors.border },
@@ -1552,7 +1562,7 @@ export default function PengaturanScreen() {
                   color={colors.isDark ? "#4ADE80" : "#16A34A"}
                 />
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -1573,7 +1583,7 @@ export default function PengaturanScreen() {
             <Text style={[styles.modalTitle, { color: colors.text }]}>
               {t("select_app_language")}
             </Text>
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[
                 styles.selectOption,
                 { backgroundColor: colors.inputBg, borderColor: colors.border },
@@ -1591,8 +1601,8 @@ export default function PengaturanScreen() {
                   color={colors.isDark ? "#4ADE80" : "#16A34A"}
                 />
               )}
-            </TouchableOpacity>
-            <TouchableOpacity
+            </SoundTouchableOpacity>
+            <SoundTouchableOpacity
               style={[
                 styles.selectOption,
                 { backgroundColor: colors.inputBg, borderColor: colors.border },
@@ -1610,7 +1620,7 @@ export default function PengaturanScreen() {
                   color={colors.isDark ? "#4ADE80" : "#16A34A"}
                 />
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -1633,9 +1643,9 @@ export default function PengaturanScreen() {
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {t("faq")}
               </Text>
-              <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
                 <Ionicons name="close" size={24} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={[styles.faqQuestion, { color: colors.text }]}>
@@ -1679,9 +1689,9 @@ export default function PengaturanScreen() {
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {t("privacy_policy")}
               </Text>
-              <TouchableOpacity onPress={() => setActiveModal(null)}>
+              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
                 <Ionicons name="close" size={24} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={[styles.faqAnswer, { color: colors.subtext }]}>

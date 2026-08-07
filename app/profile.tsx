@@ -16,9 +16,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -634,7 +634,7 @@ export default function ProfileScreen() {
       <View style={styles.mainContent}>
         {/* SECTION FOTO PROFIL BULAT DI TENGAH AGAK ATAS */}
         <View style={styles.profileImageSection}>
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={[
               styles.imageContainerBig,
               { backgroundColor: colors.isDark ? "#334155" : "#E2E8F0" },
@@ -659,7 +659,7 @@ export default function ProfileScreen() {
             <View style={styles.editIconBadge}>
               <Ionicons name="pencil" size={14} color="#FFF" />
             </View>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
           <Text style={[styles.clickToEditHint, { color: colors.subtext }]}>
             {language === "id"
               ? "Ketuk foto untuk mengelola"
@@ -686,7 +686,7 @@ export default function ProfileScreen() {
               Username
             </Text>
             {!isEditingUsername ? (
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 onPress={() => setIsEditingUsername(true)}
                 style={{
                   flexDirection: "row",
@@ -709,9 +709,9 @@ export default function ProfileScreen() {
                 >
                   {language === "id" ? "Ubah" : "Edit"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             ) : (
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 onPress={handleSaveUsername}
                 disabled={isSavingUsername}
                 style={{
@@ -741,7 +741,7 @@ export default function ProfileScreen() {
                     </Text>
                   </>
                 )}
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             )}
           </View>
 
@@ -803,7 +803,7 @@ export default function ProfileScreen() {
 
       {/* ==================== MODAL DROPDOWN OPSI FOTO PROFIL ==================== */}
       <Modal visible={isPhotoOptionModalOpen} transparent animationType="fade">
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={[
             styles.modalCustomOverlay,
             {
@@ -827,7 +827,7 @@ export default function ProfileScreen() {
               ]}
             />
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.sheetOptionItem}
               onPress={pickImage}
             >
@@ -841,9 +841,9 @@ export default function ProfileScreen() {
                   ? "Ganti Foto Profil"
                   : "Change Profile Photo"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.sheetOptionItem, { borderBottomWidth: 0 }]}
               onPress={handleDeletePhoto}
               disabled={isDeletingPhoto}
@@ -860,9 +860,9 @@ export default function ProfileScreen() {
                   </Text>
                 </>
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
       </Modal>
 
       {/* ==================== 💎 MODAL PREVIEW / CROP CUSTOM PREMIUM 💎 ==================== */}
@@ -918,7 +918,7 @@ export default function ProfileScreen() {
 
           {/* BARIS TOMBOL DESIGN PREMIUM */}
           <View style={styles.modalCustomFooter}>
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.modalBtn, styles.modalBtnCancel]}
               onPress={() => setIsPreviewModalOpen(false)}
               disabled={isUploading}
@@ -926,9 +926,9 @@ export default function ProfileScreen() {
               <Text style={styles.modalBtnTextCancel}>
                 {language === "id" ? "Batal" : "Cancel"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.modalBtn, styles.modalBtnConfirm]}
               onPress={handleConfirmUpload}
               disabled={isUploading}
@@ -940,7 +940,7 @@ export default function ProfileScreen() {
                   {language === "id" ? "Gunakan Foto" : "Use Photo"}
                 </Text>
               )}
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -996,14 +996,14 @@ export default function ProfileScreen() {
               {infoModal.message}
             </Text>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.btnInfoModalClose, { backgroundColor: "#16A34A" }]}
               onPress={() => setInfoModal({ ...infoModal, visible: false })}
             >
               <Text style={styles.btnInfoModalCloseText}>
                 {language === "id" ? "Selesai" : "Done"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>

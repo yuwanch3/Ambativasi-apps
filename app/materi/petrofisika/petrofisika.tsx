@@ -5,10 +5,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
+import SoundTouchableOpacity from "../../../components/SoundTouchableOpacity";
 import { LevelCard } from "../../../components/LevelCard";
 import { ScreenShell } from "../../../components/ScreenShell";
 import { useLanguage } from "../../../context/LanguageContext";
@@ -54,7 +54,7 @@ export default function MateriScreen() {
   return (
     <ScreenShell>
       <View style={styles.mainContent}>
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -73,7 +73,7 @@ export default function MateriScreen() {
               ? "Kembali ke Petrofisika"
               : "Back to Petrophysics"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}

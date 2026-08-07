@@ -11,10 +11,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChat } from "../../context/ChatContext";
@@ -132,12 +132,12 @@ export default function ChatScreen() {
           </Text>
         </View>
         {messages.length > 0 && (
-          <TouchableOpacity
+          <SoundTouchableOpacity
             onPress={() => setIsClearModalOpen(true)}
             style={styles.headerBtn}
           >
             <Ionicons name="trash-outline" size={20} color="#EF4444" />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         )}
       </View>
 
@@ -230,7 +230,7 @@ export default function ChatScreen() {
               multiline
               maxLength={2000}
             />
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[
                 styles.sendBtn,
                 {
@@ -246,7 +246,7 @@ export default function ChatScreen() {
                 size={18}
                 color={input.trim() && !isTyping ? "#FFF" : colors.subtext}
               />
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -277,9 +277,9 @@ export default function ChatScreen() {
                   {language === "id" ? "Hapus Riwayat" : "Clear History"}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => setIsClearModalOpen(false)}>
+              <SoundTouchableOpacity onPress={() => setIsClearModalOpen(false)}>
                 <Ionicons name="close" size={22} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             <Text style={[styles.modalMessage, { color: colors.subtext }]}>
@@ -289,7 +289,7 @@ export default function ChatScreen() {
             </Text>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalCancel,
                   {
@@ -304,9 +304,9 @@ export default function ChatScreen() {
                 >
                   {language === "id" ? "Batal" : "Cancel"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
 
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalConfirm,
                   { backgroundColor: "#EF4444" },
@@ -316,7 +316,7 @@ export default function ChatScreen() {
                 <Text style={styles.btnModalConfirmText}>
                   {language === "id" ? "Hapus" : "Delete"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
           </View>
         </View>

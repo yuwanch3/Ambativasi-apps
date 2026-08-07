@@ -13,9 +13,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -114,7 +114,6 @@ export default function ReviewJawabanKuis() {
   const [jawabanUser, setJawabanUser] = useState<Record<number, string>>({});
   const [indeksAktif, setIndeksAktif] = useState(0);
   const [skor, setSkor] = useState(0);
-
   // --- STATE MODAL PERINGATAN KELUAR ---
   const [showExitModal, setShowExitModal] = useState(false);
   const [exitTarget, setExitTarget] = useState<
@@ -301,14 +300,17 @@ export default function ReviewJawabanKuis() {
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.loadingContainer,
-          { backgroundColor: colors.background },
-        ]}
-      >
-        <ActivityIndicator size="large" color="#16A34A" />
-      </View>
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: colors.background },
+          ]}
+        >
+          <ActivityIndicator size="large" color="#16A34A" />
+        </View>
+      </>
     );
   }
 
@@ -346,7 +348,7 @@ export default function ReviewJawabanKuis() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -365,7 +367,7 @@ export default function ReviewJawabanKuis() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* 🟢 Tombol Kembali Atas: Mengunci status kuis dan kembali ke soal */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={kembaliKeSoalLocked}
         >
@@ -382,7 +384,7 @@ export default function ReviewJawabanKuis() {
           >
             {language === "id" ? "Kembali" : "Back"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {language === "id" ? "Review Hasil: " : "Result Review: "}
@@ -442,7 +444,7 @@ export default function ReviewJawabanKuis() {
             {listSoal.map((soal, indeks) => {
               const isCorrect = checkApakahBenar(soal, jawabanUser[indeks]);
               return (
-                <TouchableOpacity
+                <SoundTouchableOpacity
                   key={indeks}
                   style={[
                     styles.tombolAngka,
@@ -456,7 +458,7 @@ export default function ReviewJawabanKuis() {
                   <Text style={[styles.teksAngka, { color: "#fff" }]}>
                     {indeks + 1}
                   </Text>
-                </TouchableOpacity>
+                </SoundTouchableOpacity>
               );
             })}
           </ScrollView>
@@ -744,7 +746,7 @@ export default function ReviewJawabanKuis() {
 
         {/* TOMBOL NAVIGASI BAWAH */}
         <View style={styles.navigasiBawah}>
-          <TouchableOpacity
+          <SoundTouchableOpacity
             disabled={indeksAktif === 0}
             style={[styles.tombolNav, indeksAktif === 0 && { opacity: 0.4 }]}
             onPress={() => setIndeksAktif(indeksAktif - 1)}
@@ -752,27 +754,27 @@ export default function ReviewJawabanKuis() {
             <Text style={styles.teksNav}>
               {language === "id" ? "◄ Sebelumnya" : "◄ Previous"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
           {indeksAktif === listSoal.length - 1 ? (
             /* 🟢 Tombol Selesai Review: Mengunci status kuis dan kembali ke soal */
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={[styles.tombolNav, { backgroundColor: "#16A34A" }]}
               onPress={kembaliKeSoalLocked}
             >
               <Text style={styles.teksNav}>
                 {language === "id" ? "Selesai Review ✔" : "Finish Review ✔"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           ) : (
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.tombolNav}
               onPress={() => setIndeksAktif(indeksAktif + 1)}
             >
               <Text style={styles.teksNav}>
                 {language === "id" ? "Selanjutnya ►" : "Next ►"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           )}
         </View>
       </View>
@@ -835,16 +837,16 @@ export default function ReviewJawabanKuis() {
                 ? "Apakah kamu yakin ingin keluar dari halaman review hasil kuis ini?"
                 : "Are you sure you want to exit this quiz review page?"}
             </Text>
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.modalButtonUtama}
               onPress={handleTutupModalKeluar}
             >
               <Text style={styles.modalButtonText}>
                 {language === "id" ? "Tidak, Tetap Di Sini" : "No, Stay Here"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.modalButtonKeluarYa}
               onPress={() => {
                 setShowExitModal(false);
@@ -864,7 +866,7 @@ export default function ReviewJawabanKuis() {
               <Text style={styles.modalButtonTextKeluarYa}>
                 {language === "id" ? "Ya, Saya Yakin Keluar" : "Yes, Exit"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </Animated.View>
         </View>
       </Modal>

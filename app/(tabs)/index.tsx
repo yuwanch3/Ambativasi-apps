@@ -12,9 +12,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Navbar } from "../../components/navbar";
@@ -357,7 +357,7 @@ export default function HomeScreen() {
                 subject.latihanAttempts + subject.ujianAttempts;
 
               return (
-                <TouchableOpacity
+                <SoundTouchableOpacity
                   key={subject.subjectId}
                   style={[
                     styles.subjectCard,
@@ -367,7 +367,15 @@ export default function HomeScreen() {
                     },
                   ]}
                   activeOpacity={0.7}
-                  onPress={() => router.push("/materi")}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/statistik",
+                      params: {
+                        subjectId: subject.subjectId,
+                        subjectName: subject.subjectName,
+                      },
+                    })
+                  }
                 >
                   <View style={styles.subjectTop}>
                     <View
@@ -464,7 +472,7 @@ export default function HomeScreen() {
                       </Text>
                     </View>
                   </View>
-                </TouchableOpacity>
+                </SoundTouchableOpacity>
               );
             })}
           </ScrollView>
@@ -505,7 +513,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.actionRow}>
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={[
               styles.actionCard,
               { backgroundColor: colors.card, borderColor: colors.border },
@@ -531,9 +539,9 @@ export default function HomeScreen() {
             <Text style={[styles.actionSub, { color: colors.subtext }]}>
               {t("learning_materials")}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={[
               styles.actionCard,
               { backgroundColor: colors.card, borderColor: colors.border },
@@ -559,9 +567,9 @@ export default function HomeScreen() {
             <Text style={[styles.actionSub, { color: colors.subtext }]}>
               {t("start_exam")}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={[
               styles.actionCard,
               { backgroundColor: colors.card, borderColor: colors.border },
@@ -589,12 +597,12 @@ export default function HomeScreen() {
                 ? "Latih Berbicaramu"
                 : "Practice Your Speaking"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Chat Bubble */}
-      <TouchableOpacity
+      <SoundTouchableOpacity
         activeOpacity={0.8}
         style={[
           styles.floatingBubble,
@@ -606,7 +614,7 @@ export default function HomeScreen() {
         onPress={() => router.push("/chat" as any)}
       >
         <Ionicons name="sparkles" size={26} color="#FFFFFF" />
-      </TouchableOpacity>
+      </SoundTouchableOpacity>
 
       <Sidebar
         isOpen={isSidebarOpen}

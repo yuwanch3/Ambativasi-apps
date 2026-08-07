@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -42,13 +43,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         },
       ]}
     >
-      <TouchableOpacity style={styles.navButton} onPress={onOpenSidebar}>
+      <SoundTouchableOpacity style={styles.navButton} onPress={onOpenSidebar}>
         <Ionicons name="menu" size={26} color={colors.text} />
-      </TouchableOpacity>
+      </SoundTouchableOpacity>
 
       <Text style={[styles.navbarTitle, { color: colors.text }]}>Ambativasi</Text>
 
-      <TouchableOpacity
+      <SoundTouchableOpacity
         style={styles.profileAvatar}
         onPress={handleProfilePress}
       >
@@ -64,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               : "U"}
           </Text>
         )}
-      </TouchableOpacity>
+      </SoundTouchableOpacity>
     </View>
   );
 };

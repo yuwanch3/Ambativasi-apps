@@ -12,9 +12,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -22,11 +22,11 @@ import { Navbar } from "../../../../../components/navbar";
 import { Sidebar } from "../../../../../components/sidebar";
 
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
+import API_URL, { apiFetch } from "../../../../../config";
 import { useLanguage } from "../../../../../context/LanguageContext";
 import { useTheme } from "../../../../../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
-import API_URL, { apiFetch } from "../../../../../config";
 
 export default function MateriScreen() {
   // --- TEMA & BAHASA GLOBAL REAL-TIME ---
@@ -71,13 +71,12 @@ export default function MateriScreen() {
 
         // 💡 INTEGRASI SINKRONISASI FOTO PROFIL
         try {
-          const responseProfile = await apiFetch(`${API_URL}/get-profile.php?email=${parsedSession.email}`,
+          const responseProfile = await apiFetch(
+            `${API_URL}/get-profile.php?email=${parsedSession.email}`,
           );
           const dataProfile = await responseProfile.json();
           if (dataProfile.status === "success" && dataProfile.profile_image) {
-            setProfileImage(
-              `${API_URL}/${dataProfile.profile_image}`,
-            );
+            setProfileImage(`${API_URL}/${dataProfile.profile_image}`);
           }
         } catch (e) {
           console.log("Avatar gagal dimuat di materi screen", e);
@@ -227,7 +226,7 @@ export default function MateriScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -244,7 +243,7 @@ export default function MateriScreen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -261,7 +260,7 @@ export default function MateriScreen() {
           >
             {language === "id" ? "Kembali ke BAB" : "Back to CHAPTER"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -284,7 +283,7 @@ export default function MateriScreen() {
                     },
                   ]}
                 >
-                  <TouchableOpacity
+                  <SoundTouchableOpacity
                     style={[
                       styles.levelCard,
                       {
@@ -330,7 +329,7 @@ export default function MateriScreen() {
                         color={colors.subtext}
                       />
                     </Animated.View>
-                  </TouchableOpacity>
+                  </SoundTouchableOpacity>
 
                   <Animated.View
                     style={[
@@ -342,7 +341,7 @@ export default function MateriScreen() {
                       },
                     ]}
                   >
-                    <TouchableOpacity
+                    <SoundTouchableOpacity
                       style={[
                         styles.subMenuItem,
                         { borderColor: colors.border },
@@ -384,7 +383,7 @@ export default function MateriScreen() {
                           color={colors.subtext}
                         />
                       </Animated.View>
-                    </TouchableOpacity>
+                    </SoundTouchableOpacity>
 
                     <Animated.View
                       style={[
@@ -398,7 +397,7 @@ export default function MateriScreen() {
                         },
                       ]}
                     >
-                      <TouchableOpacity
+                      <SoundTouchableOpacity
                         style={[
                           styles.langMenuItem,
                           { borderColor: colors.border },
@@ -423,9 +422,9 @@ export default function MateriScreen() {
                         >
                           {language === "id" ? "B.Indo" : "Indonesian"}
                         </Text>
-                      </TouchableOpacity>
+                      </SoundTouchableOpacity>
 
-                      <TouchableOpacity
+                      <SoundTouchableOpacity
                         style={[styles.langMenuItem, { borderBottomWidth: 0 }]}
                         onPress={() =>
                           router.push(
@@ -447,10 +446,10 @@ export default function MateriScreen() {
                         >
                           {language === "id" ? "B.Jepang" : "Japanese"}
                         </Text>
-                      </TouchableOpacity>
+                      </SoundTouchableOpacity>
                     </Animated.View>
 
-                    <TouchableOpacity
+                    <SoundTouchableOpacity
                       style={[styles.subMenuItem, { borderBottomWidth: 0 }]}
                       onPress={() =>
                         router.push("/materi/bahasa-jepang/N5/bab1/videoBab1")
@@ -468,14 +467,14 @@ export default function MateriScreen() {
                           ? "Tonton Video Pembelajaran"
                           : "Watch Learning Video"}
                       </Text>
-                    </TouchableOpacity>
+                    </SoundTouchableOpacity>
                   </Animated.View>
                 </View>
               );
             }
 
             return (
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 key={level.id}
                 style={[
                   styles.levelCard,
@@ -512,7 +511,7 @@ export default function MateriScreen() {
                   size={20}
                   color={colors.subtext}
                 />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             );
           })}
         </ScrollView>
@@ -544,9 +543,9 @@ export default function MateriScreen() {
                   {language === "id" ? "Konfirmasi Kuis" : "Quiz Confirmation"}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => setIsQuizModalOpen(false)}>
+              <SoundTouchableOpacity onPress={() => setIsQuizModalOpen(false)}>
                 <Ionicons name="close" size={22} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             <Text style={[styles.modalMessage, { color: colors.subtext }]}>
@@ -556,7 +555,7 @@ export default function MateriScreen() {
             </Text>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalCancel,
                   {
@@ -571,16 +570,16 @@ export default function MateriScreen() {
                 >
                   {language === "id" ? "Batal" : "Cancel"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
 
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[styles.btnModalConfirm, { backgroundColor: "#16A34A" }]}
                 onPress={handleStartQuiz}
               >
                 <Text style={styles.btnModalConfirmText}>
                   {language === "id" ? "Mulai Soal" : "Start Quiz"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
           </View>
         </View>

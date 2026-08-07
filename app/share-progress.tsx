@@ -11,9 +11,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
@@ -160,7 +160,7 @@ export default function ShareProgressScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar barStyle={colors.statusBarStyle} backgroundColor={colors.card} />
 
@@ -171,9 +171,9 @@ export default function ShareProgressScreen() {
           { backgroundColor: colors.card, borderColor: colors.border },
         ]}
       >
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <SoundTouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={colors.text} />
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>
             {id ? "Bagikan Progress" : "Share Progress"}
@@ -233,7 +233,7 @@ export default function ShareProgressScreen() {
           </View>
 
           {/* TOMBOL SHARE */}
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={[styles.shareBtn, sharing && styles.shareBtnDisabled]}
             onPress={handleShare}
             activeOpacity={0.85}
@@ -249,7 +249,7 @@ export default function ShareProgressScreen() {
                 </Text>
               </>
             )}
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
           <Text style={[styles.shareHint, { color: colors.subtext }]}>
             {id
               ? "Akan terbuka menu berbagi — pilih WhatsApp untuk mengirim gambar."

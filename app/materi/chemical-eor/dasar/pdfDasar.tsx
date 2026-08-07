@@ -9,9 +9,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
@@ -127,7 +127,7 @@ export default function pdfBab1Screen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -146,7 +146,7 @@ export default function pdfBab1Screen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -163,7 +163,7 @@ export default function pdfBab1Screen() {
           >
             {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         {/* CONTAINER VIEW UNTUK MENAMPILKAN PDF SECARA FLEKSIBEL */}
         <View

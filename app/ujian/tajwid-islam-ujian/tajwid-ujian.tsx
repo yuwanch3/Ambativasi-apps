@@ -12,9 +12,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -156,7 +156,7 @@ export default function MateriScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -173,7 +173,7 @@ export default function MateriScreen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -190,7 +190,7 @@ export default function MateriScreen() {
           >
             {language === "id" ? "Kembali ke Tingkatan" : "Back to Level"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -201,7 +201,7 @@ export default function MateriScreen() {
           </Text>
 
           {levels.map((level) => (
-            <TouchableOpacity
+            <SoundTouchableOpacity
               key={level.id}
               style={[
                 styles.levelCard,
@@ -234,7 +234,7 @@ export default function MateriScreen() {
                 size={20}
                 color={colors.subtext}
               />
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           ))}
         </ScrollView>
       </View>
@@ -265,9 +265,9 @@ export default function MateriScreen() {
                   {language === "id" ? "Konfirmasi Soal" : "Quiz Confirmation"}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => setIsExamModalOpen(false)}>
+              <SoundTouchableOpacity onPress={() => setIsExamModalOpen(false)}>
                 <Ionicons name="close" size={22} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             <Text style={[styles.modalMessage, { color: colors.subtext }]}>
@@ -277,7 +277,7 @@ export default function MateriScreen() {
             </Text>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalCancel,
                   {
@@ -292,16 +292,16 @@ export default function MateriScreen() {
                 >
                   {language === "id" ? "Batal" : "Cancel"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
 
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[styles.btnModalConfirm, { backgroundColor: "#2563EB" }]}
                 onPress={handleStartExam}
               >
                 <Text style={styles.btnModalConfirmText}>
                   {language === "id" ? "Mulai Soal" : "Start Quiz"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
           </View>
         </View>

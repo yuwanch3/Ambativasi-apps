@@ -11,9 +11,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import YoutubePlayer from "react-native-youtube-iframe";
 
@@ -153,7 +153,7 @@ export default function VideoBab1Screen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       {/* Sembunyikan Header bawaan Expo agar tidak double */}
       <Stack.Screen options={{ headerShown: false }} />
@@ -177,7 +177,7 @@ export default function VideoBab1Screen() {
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI: HANYA MUNCUL JIKA TIDAK SEDANG FULL SCREEN */}
         {!isFullScreen && (
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
           >
@@ -194,7 +194,7 @@ export default function VideoBab1Screen() {
             >
               {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         )}
 
         <ScrollView

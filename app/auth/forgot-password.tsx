@@ -6,9 +6,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_URL, { apiFetch } from "../../config";
 
@@ -157,7 +157,7 @@ export default function ForgotPasswordScreen() {
           editable={!isButtonDisabled}
         />
 
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={[
             styles.resetButton,
             isButtonDisabled && [
@@ -181,16 +181,16 @@ export default function ForgotPasswordScreen() {
                 : "Send Instructions"}
             </Text>
           )}
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.push("/auth/login")}
         >
           <Text style={[styles.backButtonText, { color: colors.isDark ? "#60A5FA" : "#2563EB" }]}>
             {language === "id" ? "Kembali ke Login" : "Back to Login"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
       </View>
     </SafeAreaView>
   );

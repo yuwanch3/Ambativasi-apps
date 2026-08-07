@@ -9,15 +9,18 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
 import { Navbar } from "../../../../components/navbar";
 import { Sidebar } from "../../../../components/sidebar";
+
+// 💡 IMPORT DATA SUMBER MATERI
+import { SUMBER_MATERI_TAJWID } from "../../../../src/data/materiSumber";
 
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../context/ThemeContext";
@@ -40,9 +43,9 @@ export default function pdfBab1Screen() {
   } | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // 💡 ONLINE: ID file PDF materi Tajwid
-  const onlinePdfUrl =
-    "https://docs.google.com/uc?export=download&id=1ag9eYSeJaul5QvWuWXVPkLUf7WIWLci8";
+  // 💡 ONLINE: ID file PDF materi Tajwid dari data sumber materi
+  const data = SUMBER_MATERI_TAJWID["al-fatihah"];
+  const onlinePdfUrl = data.pdfUrl;
 
   // Google Docs View Embed Renderer
   const webViewSource = {
@@ -119,7 +122,7 @@ export default function pdfBab1Screen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top"]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top", "bottom"]}>
       <StatusBar barStyle={colors.statusBarStyle} backgroundColor={colors.card} />
 
       {/* MENGHILANGKAN BAR PUTIH BAWAAN EXPO ROUTER */}
@@ -135,7 +138,7 @@ export default function pdfBab1Screen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -143,7 +146,7 @@ export default function pdfBab1Screen() {
           <Text style={[styles.backButtonText, { color: colors.isDark ? "#4ADE80" : "#16A34A" }]}>
             {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         {/* CONTAINER VIEW UNTUK MENAMPILKAN PDF SECARA FLEKSIBEL */}
         <View style={[styles.pdfContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>

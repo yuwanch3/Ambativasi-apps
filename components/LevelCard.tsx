@@ -5,10 +5,10 @@ import {
   ImageSourcePropType,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 import { useTheme } from "../context/ThemeContext";
 
 interface LevelCardItem {
@@ -27,7 +27,7 @@ export function LevelCard({ item, onPress }: LevelCardProps) {
   const { colors } = useTheme();
 
   return (
-    <TouchableOpacity
+    <SoundTouchableOpacity
       style={[
         styles.levelCard,
         { backgroundColor: colors.card, borderColor: colors.border },
@@ -55,7 +55,7 @@ export function LevelCard({ item, onPress }: LevelCardProps) {
         </View>
       </View>
       <Ionicons name="chevron-forward" size={20} color={colors.subtext} />
-    </TouchableOpacity>
+    </SoundTouchableOpacity>
   );
 }
 

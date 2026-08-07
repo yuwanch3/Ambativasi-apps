@@ -9,10 +9,10 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <View
       style={[styles.sidebarOverlay, { backgroundColor: colors.modalOverlay }]}
     >
-      <TouchableOpacity
+      <SoundTouchableOpacity
         style={styles.sidebarCloseArea}
         onPress={onClose}
         activeOpacity={1}
@@ -114,15 +114,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
+            <SoundTouchableOpacity onPress={onClose} style={{ padding: 4 }}>
               <Ionicons name="close" size={24} color={colors.subtext} />
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
 
           {/* Menu Items */}
           <View style={styles.sidebarMenuContainer}>
             {/* 1. Dashboard */}
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.menuItem}
               onPress={() => {
                 onClose();
@@ -142,10 +142,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Text style={[styles.menuText, { color: colors.text }]}>
                 {t("dashboard")}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
             {/* 2. Agent AI Chat (Menu Baru di Bawah Dashboard) */}
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.menuItem}
               onPress={() => {
                 onClose();
@@ -165,10 +165,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Text style={[styles.menuText, { color: colors.text }]}>
                 {t("ai_assistant")}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
             {/* 3. Profile */}
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.menuItem}
               onPress={() => {
                 onClose();
@@ -188,10 +188,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Text style={[styles.menuText, { color: colors.text }]}>
                 {t("my_profile")}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
             {/* 4. Pengaturan */}
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.menuItem}
               onPress={() => {
                 onClose();
@@ -211,10 +211,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Text style={[styles.menuText, { color: colors.text }]}>
                 {t("settings")}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
             {/* 5. Bagikan Progress */}
-            <TouchableOpacity
+            <SoundTouchableOpacity
               style={styles.menuItem}
               onPress={() => {
                 onClose();
@@ -234,13 +234,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Text style={[styles.menuText, { color: colors.text }]}>
                 {t("share_progress")}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </View>
         </View>
 
         {/* Footer Logout */}
         <View style={styles.sidebarFooter}>
-          <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
+          <SoundTouchableOpacity style={styles.logoutButton} onPress={onLogout}>
             <Ionicons
               name="log-out-outline"
               size={20}
@@ -250,7 +250,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Text style={styles.logoutText}>
               {t("logout")}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
       </Animated.View>
     </View>

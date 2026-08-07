@@ -6,10 +6,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
+import SoundTouchableOpacity from "../../../components/SoundTouchableOpacity";
 import { LevelCard } from "../../../components/LevelCard";
 import { ScreenShell } from "../../../components/ScreenShell";
 import { useLanguage } from "../../../context/LanguageContext";
@@ -60,7 +60,7 @@ export default function BabListScreen() {
   return (
     <ScreenShell>
       <View style={styles.mainContent}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <SoundTouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons
             name="arrow-back"
             size={22}
@@ -74,7 +74,7 @@ export default function BabListScreen() {
           >
             {language === "id" ? "Kembali ke Seri" : "Back to Series"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -122,9 +122,9 @@ export default function BabListScreen() {
                   {language === "id" ? "Konfirmasi Soal" : "Quiz Confirmation"}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => setIsExamModalOpen(false)}>
+              <SoundTouchableOpacity onPress={() => setIsExamModalOpen(false)}>
                 <Ionicons name="close" size={22} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             <Text style={[styles.modalMessage, { color: colors.subtext }]}>
@@ -134,7 +134,7 @@ export default function BabListScreen() {
             </Text>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalCancel,
                   {
@@ -147,16 +147,16 @@ export default function BabListScreen() {
                 <Text style={[styles.btnModalCancelText, { color: colors.text }]}>
                   {language === "id" ? "Batal" : "Cancel"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
 
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[styles.btnModalConfirm, { backgroundColor: "#2563EB" }]}
                 onPress={handleStartExam}
               >
                 <Text style={styles.btnModalConfirmText}>
                   {language === "id" ? "Mulai Soal" : "Start Quiz"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
           </View>
         </View>

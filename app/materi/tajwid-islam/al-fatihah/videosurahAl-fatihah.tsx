@@ -11,15 +11,18 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import YoutubePlayer from "react-native-youtube-iframe";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
 import { Navbar } from "../../../../components/navbar";
 import { Sidebar } from "../../../../components/sidebar";
+
+// 💡 IMPORT DATA SUMBER MATERI
+import { SUMBER_MATERI_TAJWID } from "../../../../src/data/materiSumber";
 
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../context/ThemeContext";
@@ -42,8 +45,9 @@ export default function VideoBab1Screen() {
   } | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // ID Video YouTube
-  const videoId = "QwUTyC4rd7c";
+  // ID Video YouTube dari data sumber materi
+  const data = SUMBER_MATERI_TAJWID["al-fatihah"];
+  const videoId = data.videoId;
 
   // State untuk melacak status full screen
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -143,7 +147,7 @@ export default function VideoBab1Screen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top"]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top", "bottom"]}>
       {/* Sembunyikan Header bawaan Expo agar tidak double */}
       <Stack.Screen options={{ headerShown: false }} />
 
@@ -163,7 +167,7 @@ export default function VideoBab1Screen() {
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI: HANYA MUNCUL JIKA TIDAK SEDANG FULL SCREEN */}
         {!isFullScreen && (
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
           >
@@ -171,7 +175,7 @@ export default function VideoBab1Screen() {
             <Text style={[styles.backButtonText, { color: colors.isDark ? "#4ADE80" : "#16A34A" }]}>
               {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         )}
 
         <ScrollView

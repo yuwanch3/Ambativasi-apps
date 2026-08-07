@@ -9,9 +9,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT TOAST DAN CONFIG CENTRAL URL
@@ -196,7 +196,7 @@ export default function App() {
             value={password}
             onChangeText={setPassword}
           />
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.eyeButton}
             onPress={() => setShowPassword(!showPassword)}
           >
@@ -205,16 +205,16 @@ export default function App() {
               size={22}
               color={colors.subtext}
             />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => router.push("/auth/forgot-password")}>
+        <SoundTouchableOpacity onPress={() => router.push("/auth/forgot-password")}>
           <Text style={[styles.forgotPassword, { color: colors.isDark ? "#60A5FA" : "#2563EB" }]}>
             {language === "id" ? "Lupa Kata Sandi?" : "Forgot Password?"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={[
             styles.registerButton,
             isSubmitting && [
@@ -232,17 +232,17 @@ export default function App() {
               {language === "id" ? "Daftar" : "Sign Up"}
             </Text>
           )}
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <View style={styles.registerContainer}>
           <Text style={{ color: colors.subtext }}>
             {language === "id" ? "Sudah punya akun? " : "Have an account? "}
           </Text>
-          <TouchableOpacity onPress={() => router.push("/auth/login")}>
+          <SoundTouchableOpacity onPress={() => router.push("/auth/login")}>
             <Text style={[styles.registerText, { color: colors.isDark ? "#60A5FA" : "#2563EB" }]}>
               {language === "id" ? "Masuk" : "Sign In"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

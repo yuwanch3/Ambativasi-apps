@@ -9,15 +9,18 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
 import { Navbar } from "../../../../../components/navbar";
 import { Sidebar } from "../../../../../components/sidebar";
+
+// 💡 IMPORT DATA SUMBER MATERI
+import { SUMBER_MATERI_BAHASA_JEPANG } from "../../../../../src/data/materiSumber";
 
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../../context/ThemeContext";
@@ -40,8 +43,8 @@ export default function pdfBab1Screen() {
   } | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  const onlinePdfUrl =
-    "https://docs.google.com/uc?export=download&id=16qaavcuqhneWbFnmbgdib0ii8utynl6w";
+  const data = SUMBER_MATERI_BAHASA_JEPANG["bab1-bin"];
+  const onlinePdfUrl = data.pdfUrl;
 
   const webViewSource = {
     uri: `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(onlinePdfUrl)}`,
@@ -127,7 +130,7 @@ export default function pdfBab1Screen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -146,7 +149,7 @@ export default function pdfBab1Screen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -163,7 +166,7 @@ export default function pdfBab1Screen() {
           >
             {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         {/* CONTAINER VIEW UNTUK MENAMPILKAN PDF SECARA FLEKSIBEL */}
         <View

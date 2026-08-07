@@ -9,15 +9,18 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
 import { Navbar } from "../../../../../components/navbar";
 import { Sidebar } from "../../../../../components/sidebar";
+
+// 💡 IMPORT DATA SUMBER MATERI
+import { SUMBER_MATERI_BAHASA_JEPANG } from "../../../../../src/data/materiSumber";
 
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
 import { useTheme } from "../../../../../context/ThemeContext";
@@ -40,9 +43,8 @@ export default function pdfBab1Screen() {
   } | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // 1. Ubah kembali ke format uc?export=download agar Google Docs bisa membaca file mentahnya
-  const onlinePdfUrl =
-    "https://docs.google.com/uc?export=download&id=1pLqTfVTcFSxa4S15bCSjY55g9FgAJe-3";
+  const data = SUMBER_MATERI_BAHASA_JEPANG["bab1-bjp"];
+  const onlinePdfUrl = data.pdfUrl;
 
   // 2. Bungkus dengan gview agar otomatis dirender jadi dokumen interaktif yang BISA DIZOOM
   const webViewSource = {
@@ -129,7 +131,7 @@ export default function pdfBab1Screen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -149,7 +151,7 @@ export default function pdfBab1Screen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -166,7 +168,7 @@ export default function pdfBab1Screen() {
           >
             {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         {/* CONTAINER VIEW UNTUK MENAMPILKAN PDF SECARA FLEKSIBEL */}
         <View

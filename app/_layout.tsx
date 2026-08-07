@@ -1,4 +1,3 @@
-import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -72,28 +71,9 @@ function RootLayoutNav() {
       NavigationBar.setBackgroundColorAsync(colors.background);
       NavigationBar.setButtonStyleAsync(colors.isDark ? "light" : "dark");
 
-      // 🟢 AUTO-HIDE NAVIGATION BAR
-      NavigationBar.setBehaviorAsync("overlay-swipe");
-      NavigationBar.setVisibilityAsync("hidden");
-
-      let timeoutId: ReturnType<typeof setTimeout>;
-
-      const subscription = NavigationBar.addVisibilityListener(
-        ({ visibility }) => {
-          if (visibility === "visible") {
-            if (timeoutId) clearTimeout(timeoutId);
-
-            timeoutId = setTimeout(() => {
-              NavigationBar.setVisibilityAsync("hidden");
-            }, 3000); // 👈 Sembunyi lagi setelah 3 detik
-          }
-        },
-      );
-
-      return () => {
-        subscription.remove();
-        if (timeoutId) clearTimeout(timeoutId);
-      };
+      // 🟢 TOMBOL NAVIGASI ANDROID SELALU TAMPIL & KONTEN DI-INSET OTOMATIS
+      NavigationBar.setBehaviorAsync("inset-touch");
+      NavigationBar.setVisibilityAsync("visible");
     }
   }, [colors.isDark, colors.background]);
 
@@ -101,7 +81,7 @@ function RootLayoutNav() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <Stack
         initialRouteName="auth/login"
-        theme={colors.isDark ? DarkTheme : DefaultTheme}
+        screenOptions={{ headerShown: false }}
       >
           {/* Halaman Auth */}
           <Stack.Screen name="auth/login" options={{ headerShown: false }} />
@@ -117,6 +97,8 @@ function RootLayoutNav() {
 
           {/* Core Tabs */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+          <Stack.Screen name="statistik/index" options={{ headerShown: false }} />
 
           <Stack.Screen name="profile" options={{ headerShown: false }} />
 

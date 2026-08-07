@@ -10,9 +10,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT TOAST DAN CONFIG URL
@@ -168,11 +168,11 @@ export default function App() {
             ? "Aplikasi tidak dapat digunakan sementara waktu karena server pusat sedang mati atau dalam perbaikan."
             : "The app cannot be used temporarily because the central server is down or under maintenance."}
         </Text>
-        <TouchableOpacity style={styles.retryButton} onPress={cekKoneksiServer}>
+        <SoundTouchableOpacity style={styles.retryButton} onPress={cekKoneksiServer}>
           <Text style={styles.loginButtonText}>
             {language === "id" ? "Coba Hubungkan Lagi" : "Try Connecting Again"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
       </View>
     );
   }
@@ -228,7 +228,7 @@ export default function App() {
             value={password}
             onChangeText={setPassword}
           />
-          <TouchableOpacity
+          <SoundTouchableOpacity
             style={styles.eyeButton}
             onPress={() => setShowPassword(!showPassword)}
           >
@@ -237,16 +237,16 @@ export default function App() {
               size={22}
               color={colors.subtext}
             />
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => router.push("/auth/forgot-password")}>
+        <SoundTouchableOpacity onPress={() => router.push("/auth/forgot-password")}>
           <Text style={[styles.forgotPassword, { color: colors.isDark ? "#60A5FA" : "#2563EB" }]}>
             {language === "id" ? "Lupa Kata Sandi?" : "Forgot Password?"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={[
             styles.loginButton,
             isSubmitting && [
@@ -264,17 +264,17 @@ export default function App() {
               {language === "id" ? "Masuk" : "Sign In"}
             </Text>
           )}
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <View style={styles.loginContainer}>
           <Text style={{ color: colors.subtext }}>
             {language === "id" ? "Belum punya akun? " : "Don't have an account? "}
           </Text>
-          <TouchableOpacity onPress={() => router.push("/auth/register")}>
+          <SoundTouchableOpacity onPress={() => router.push("/auth/register")}>
             <Text style={[styles.registerText, { color: colors.isDark ? "#60A5FA" : "#2563EB" }]}>
               {language === "id" ? "Daftar" : "Sign Up"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

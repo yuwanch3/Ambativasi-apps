@@ -12,9 +12,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -198,7 +198,7 @@ export default function MateriSeriScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -215,7 +215,7 @@ export default function MateriSeriScreen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <SoundTouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons
             name="arrow-back"
             size={20}
@@ -229,7 +229,7 @@ export default function MateriSeriScreen() {
           >
             {language === "id" ? "Kembali ke Tingkatan" : "Back to Level"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -252,7 +252,7 @@ export default function MateriSeriScreen() {
                     },
                   ]}
                 >
-                  <TouchableOpacity
+                  <SoundTouchableOpacity
                     style={[
                       styles.levelCard,
                       {
@@ -298,7 +298,7 @@ export default function MateriSeriScreen() {
                         color={colors.subtext}
                       />
                     </Animated.View>
-                  </TouchableOpacity>
+                  </SoundTouchableOpacity>
 
                   <Animated.View
                     style={[
@@ -310,7 +310,7 @@ export default function MateriSeriScreen() {
                       },
                     ]}
                   >
-                    <TouchableOpacity
+                    <SoundTouchableOpacity
                       style={[
                         styles.subMenuItem,
                         { borderColor: colors.border },
@@ -337,9 +337,9 @@ export default function MateriSeriScreen() {
                           ? "Buka Materi PDF"
                           : "Open PDF Material"}
                       </Text>
-                    </TouchableOpacity>
+                    </SoundTouchableOpacity>
 
-                    <TouchableOpacity
+                    <SoundTouchableOpacity
                       style={[styles.subMenuItem, { borderBottomWidth: 0 }]}
                       onPress={() =>
                         router.push(
@@ -359,14 +359,14 @@ export default function MateriSeriScreen() {
                           ? "Tonton Video Pembelajaran"
                           : "Watch Learning Video"}
                       </Text>
-                    </TouchableOpacity>
+                    </SoundTouchableOpacity>
                   </Animated.View>
                 </View>
               );
             }
 
             return (
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 key={level.id}
                 style={[
                   styles.levelCard,
@@ -399,7 +399,7 @@ export default function MateriSeriScreen() {
                   size={20}
                   color={colors.subtext}
                 />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             );
           })}
         </ScrollView>
@@ -431,9 +431,9 @@ export default function MateriSeriScreen() {
                   {language === "id" ? "Konfirmasi Kuis" : "Quiz Confirmation"}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => setIsQuizModalOpen(false)}>
+              <SoundTouchableOpacity onPress={() => setIsQuizModalOpen(false)}>
                 <Ionicons name="close" size={22} color={colors.subtext} />
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
 
             <Text style={[styles.modalMessage, { color: colors.subtext }]}>
@@ -443,7 +443,7 @@ export default function MateriSeriScreen() {
             </Text>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalCancel,
                   {
@@ -456,9 +456,9 @@ export default function MateriSeriScreen() {
                 <Text style={[styles.btnModalCancelText, { color: colors.text }]}>
                   {language === "id" ? "Batal" : "Cancel"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
 
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 style={[
                   styles.btnModalConfirm,
                   { backgroundColor: colors.isDark ? "#16A34A" : "#16A34A" },
@@ -468,7 +468,7 @@ export default function MateriSeriScreen() {
                 <Text style={styles.btnModalConfirmText}>
                   {language === "id" ? "Mulai Soal" : "Start Quiz"}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             </View>
           </View>
         </View>

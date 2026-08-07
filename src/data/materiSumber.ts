@@ -24,7 +24,7 @@ export const SUMBER_MATERI_PETROFISIKA: Record<string, MateriSumber> = {
     subId: "Porositas, Permeabilitas & Saturasi Air",
     subEn: "Porosity, Permeability & Water Saturation",
     pdfUrl:
-      "https://docs.google.com/uc?export=download&id=1MTiZuII7XphTNoqfy5zd2dNZcKqo_ife",
+      "https://docs.google.com/uc?export=download&id=1sQQzEmqGS55qNL9pq-fpDELxLJLOUDkU",
     videoId: "PeJ-el7k81s",
     sumberData: "PETROFISIKA_SERI1",
   },
@@ -34,7 +34,8 @@ export const SUMBER_MATERI_PETROFISIKA: Record<string, MateriSumber> = {
     judulEn: "Series 2: Special Core Analysis",
     subId: "Wettability, IFT, Capillary Pressure & Relative Permeability",
     subEn: "Wettability, IFT, Capillary Pressure & Relative Permeability",
-    pdfUrl: "https://www.jogmec.go.jp/content/300391376.pdf",
+    pdfUrl:
+      "https://docs.google.com/uc?export=download&id=1OacrW5_knhXwmnDd8BR8_JdAqsCdGs5v",
     videoId: "dZRmW4o4vBk",
     sumberData: "PETROFISIKA_SERI2",
   },
@@ -45,7 +46,7 @@ export const SUMBER_MATERI_PETROFISIKA: Record<string, MateriSumber> = {
     subId: "Digital Rock Physics, Simulasi & Software",
     subEn: "Digital Rock Physics, Simulation & Software",
     pdfUrl:
-      "https://cdn.intechopen.com/pdfs/40517/InTech-Digital_rock_physics_for_fast_and_accurate_special_core_analysis_in_carbonates.pdf",
+      "https://docs.google.com/uc?export=download&id=1w-0sOMAMs1PY1tMwJugLDEnt6iAZ9Ws3",
     videoId: "wQT_Y0NrMeU",
     sumberData: "PETROFISIKA_SERI3",
   },
@@ -60,7 +61,7 @@ export const SUMBER_MATERI_CHEMICAL_EOR: Record<string, MateriSumber> = {
     subId: "IFT, Microemulsion & Screening Criteria",
     subEn: "IFT, Microemulsion & Screening Criteria",
     pdfUrl:
-      "https://orbit.dtu.dk/files/51218569/Final_PhD_thesis_May_2012_sbs..PDF",
+      "https://docs.google.com/uc?export=download&id=1sNi5znXKjXRj1OJmJkAPeM98-mMqtmRx",
     videoId: "BuwKSXmiGRI",
     sumberData: "CHEMICAL_EOR_SURFAKTAN",
   },
@@ -70,7 +71,8 @@ export const SUMBER_MATERI_CHEMICAL_EOR: Record<string, MateriSumber> = {
     judulEn: "Alkaline",
     subId: "Caustic Flooding, In-situ Surfactant & Emulsifikasi",
     subEn: "Caustic Flooding, In-situ Surfactant & Emulsification",
-    pdfUrl: "https://www.mdpi.com/1996-1073/15/10/3820/pdf",
+    pdfUrl:
+      "https://docs.google.com/uc?export=download&id=10Un6pZifvFdSzLSFTP-rKIojXTp6yn29",
     videoId: "6IxK9KDYk_0",
     sumberData: "CHEMICAL_EOR_ALKALINE",
   },
@@ -84,5 +86,46 @@ export const SUMBER_MATERI_CHEMICAL_EOR: Record<string, MateriSumber> = {
       "https://www.nstauthority.co.uk/media/4283/polymer-eor-industry-starter-pack-ver3.pdf",
     videoId: "gF1xFFFw2SY",
     sumberData: "CHEMICAL_EOR_POLIMER",
+  },
+};
+
+// ---------- BAHASA JEPANG: N5 BAB 1 ----------
+export const SUMBER_MATERI_BAHASA_JEPANG: Record<string, MateriSumber> = {
+  "bab1-bin": {
+    id: "bab1-bin",
+    judulId: "Minna no Nihongo BAB 1 (B.Indonesia)",
+    judulEn: "Minna no Nihongo Chapter 1 (Indonesian)",
+    subId: "PDF Materi Bahasa Indonesia",
+    subEn: "Indonesian PDF Material",
+    pdfUrl:
+      "https://docs.google.com/uc?export=download&id=16qaavcuqhneWbFnmbgdib0ii8utynl6w",
+    videoId: "lrhkh5WPfy8",
+    sumberData: "NIHONGO_BAB1",
+  },
+  "bab1-bjp": {
+    id: "bab1-bjp",
+    judulId: "Minna no Nihongo BAB 1 (B.Jepang)",
+    judulEn: "Minna no Nihongo Chapter 1 (Japanese)",
+    subId: "PDF Materi Bahasa Jepang",
+    subEn: "Japanese PDF Material",
+    pdfUrl:
+      "https://docs.google.com/uc?export=download&id=1pLqTfVTcFSxa4S15bCSjY55g9FgAJe-3",
+    videoId: "lrhkh5WPfy8",
+    sumberData: "NIHONGO_BAB1",
+  },
+};
+
+// ---------- TAJWID: AL-FATIHAH ----------
+export const SUMBER_MATERI_TAJWID: Record<string, MateriSumber> = {
+  "al-fatihah": {
+    id: "al-fatihah",
+    judulId: "Tajwid Surah Al-Fatihah",
+    judulEn: "Tajweed of Surah Al-Fatihah",
+    subId: "PDF Materi Tajwid Al-Fatihah",
+    subEn: "Tajweed Al-Fatihah PDF Material",
+    pdfUrl:
+      "https://docs.google.com/uc?export=download&id=1ag9eYSeJaul5QvWuWXVPkLUf7WIWLci8",
+    videoId: "QwUTyC4rd7c",
+    sumberData: "TJ_AL_FATIHAH",
   },
 };

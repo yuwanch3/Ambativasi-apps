@@ -6,9 +6,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 1. IMPORT TOAST DAN CONFIG CENTRAL URL
@@ -141,7 +141,7 @@ export default function ResetPasswordScreen() {
           value={password}
           onChangeText={setPassword}
         />
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.eyeButton}
           onPress={() => setShowPassword(!showPassword)}
         >
@@ -150,7 +150,7 @@ export default function ResetPasswordScreen() {
             size={22}
             color={colors.subtext}
           />
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
       </View>
 
       <View
@@ -171,7 +171,7 @@ export default function ResetPasswordScreen() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.eyeButton}
           onPress={() => setShowConfirmPassword(!showConfirmPassword)}
         >
@@ -180,14 +180,14 @@ export default function ResetPasswordScreen() {
             size={22}
             color={colors.subtext}
           />
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleUpdatePassword}>
+      <SoundTouchableOpacity style={styles.button} onPress={handleUpdatePassword}>
         <Text style={styles.buttonText}>
           {language === "id" ? "Simpan & Login" : "Save & Sign In"}
         </Text>
-      </TouchableOpacity>
+      </SoundTouchableOpacity>
     </SafeAreaView>
   );
 }

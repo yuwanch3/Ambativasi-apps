@@ -11,9 +11,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -134,7 +134,7 @@ export default function MateriScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -151,7 +151,7 @@ export default function MateriScreen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -168,7 +168,7 @@ export default function MateriScreen() {
           >
             {t("back_to_level")}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -179,7 +179,7 @@ export default function MateriScreen() {
           </Text>
 
           {levels.map((level) => (
-            <TouchableOpacity
+            <SoundTouchableOpacity
               key={level.id}
               style={[
                 styles.levelCard,
@@ -215,7 +215,7 @@ export default function MateriScreen() {
                 size={20}
                 color={colors.subtext}
               />
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           ))}
         </ScrollView>
       </View>

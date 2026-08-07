@@ -7,14 +7,13 @@ import {
   Animated,
   Dimensions,
   Image,
-  Modal,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -42,10 +41,6 @@ export default function MateriScreen() {
     username: string;
     email: string;
   } | null>(null);
-
-  // --- STATE MODAL KONFIRMASI LATIHAN SOAL / UJIAN ---
-  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
-  const [selectedExamPath, setSelectedExamPath] = useState<string>("");
 
   useEffect(() => {
     checkSession();
@@ -112,20 +107,6 @@ export default function MateriScreen() {
     }
   };
 
-  // 💡 BUKA MODAL KONFIRMASI DENGAN MENYIMPAN PATH UJIAN
-  const handleOpenExamModal = (path: string) => {
-    setSelectedExamPath(path);
-    setIsExamModalOpen(true);
-  };
-
-  // 💡 EKSEKUSI MASUK LATIHAN SOAL / UJIAN SETELAH DIKONFIRMASI
-  const handleStartExam = () => {
-    setIsExamModalOpen(false);
-    if (selectedExamPath) {
-      router.push(selectedExamPath as any);
-    }
-  };
-
   if (loading) {
     return (
       <View
@@ -185,7 +166,7 @@ export default function MateriScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -202,7 +183,7 @@ export default function MateriScreen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity
+        <SoundTouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -219,7 +200,7 @@ export default function MateriScreen() {
           >
             {language === "id" ? "Kembali ke Ujian" : "Back to Exam"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -230,13 +211,13 @@ export default function MateriScreen() {
           </Text>
 
           {levels.map((level) => (
-            <TouchableOpacity
+            <SoundTouchableOpacity
               key={level.id}
               style={[
                 styles.levelCard,
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
-              onPress={() => handleOpenExamModal(level.path)}
+              onPress={() => router.push(level.path as any)}
             >
               <View style={styles.levelCardLeft}>
                 <View style={[styles.levelBadge]}>
@@ -263,78 +244,10 @@ export default function MateriScreen() {
                 size={20}
                 color={colors.subtext}
               />
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           ))}
         </ScrollView>
       </View>
-
-      {/* ==================== MODAL KONFIRMASI LATIHAN SOAL ==================== */}
-      <Modal visible={isExamModalOpen} transparent animationType="fade">
-        <View
-          style={[
-            styles.modalOverlay,
-            { backgroundColor: colors.modalOverlay },
-          ]}
-        >
-          <View
-            style={[
-              styles.modalCard,
-              { backgroundColor: colors.card, borderColor: colors.border },
-            ]}
-          >
-            <View style={styles.modalHeader}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Ionicons
-                  name="help-circle-outline"
-                  size={24}
-                  color={colors.isDark ? "#60A5FA" : "#2563EB"}
-                  style={{ marginRight: 8 }}
-                />
-                <Text style={[styles.modalTitle, { color: colors.text }]}>
-                  {language === "id" ? "Konfirmasi Soal" : "Quiz Confirmation"}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={() => setIsExamModalOpen(false)}>
-                <Ionicons name="close" size={22} color={colors.subtext} />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={[styles.modalMessage, { color: colors.subtext }]}>
-              {language === "id"
-                ? "Apakah anda yakin ingin mengerjakan latihan soal ini?"
-                : "Are you sure you want to attempt this practice quiz?"}
-            </Text>
-
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[
-                  styles.btnModalCancel,
-                  {
-                    backgroundColor: colors.inputBg,
-                    borderColor: colors.border,
-                  },
-                ]}
-                onPress={() => setIsExamModalOpen(false)}
-              >
-                <Text
-                  style={[styles.btnModalCancelText, { color: colors.text }]}
-                >
-                  {language === "id" ? "Batal" : "Cancel"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.btnModalConfirm, { backgroundColor: "#2563EB" }]}
-                onPress={handleStartExam}
-              >
-                <Text style={styles.btnModalConfirmText}>
-                  {language === "id" ? "Mulai Soal" : "Start Quiz"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
 
       {/* ==================== SIDEBAR ==================== */}
       <Sidebar
@@ -410,64 +323,4 @@ const styles = StyleSheet.create({
   },
   levelTitle: { fontSize: 16, fontWeight: "bold" },
   levelSubtitle: { fontSize: 12, marginTop: 2 },
-
-  // STYLES MODAL KONFIRMASI
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalCard: {
-    width: "100%",
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  modalTitle: {
-    fontSize: 17,
-    fontWeight: "bold",
-  },
-  modalMessage: {
-    fontSize: 14,
-    lineHeight: 22,
-    marginVertical: 10,
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 18,
-  },
-  btnModalCancel: {
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginRight: 10,
-  },
-  btnModalCancelText: {
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  btnModalConfirm: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-  },
-  btnModalConfirmText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
 });

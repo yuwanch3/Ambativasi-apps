@@ -15,9 +15,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
@@ -387,14 +387,17 @@ export default function SubUjianTajwid() {
 
   if (loadingSession || loadingAI) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color="#16A34A" />
-        <Text style={[styles.teksLoading, { color: colors.subtext }]}>
-          {language === "id"
-            ? "Sedang meracik 50 butir soal Ujian Tajwid Surah Al-Fatihah..."
-            : "Generating 50 exam questions for Surah Al-Fatihah Tajweed..."}
-        </Text>
-      </View>
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+          <ActivityIndicator size="large" color="#16A34A" />
+          <Text style={[styles.teksLoading, { color: colors.subtext }]}>
+            {language === "id"
+              ? "Sedang meracik 50 butir soal Ujian Tajwid Surah Al-Fatihah..."
+              : "Generating 50 exam questions for Surah Al-Fatihah Tajweed..."}
+          </Text>
+        </View>
+      </>
     );
   }
 
@@ -412,7 +415,7 @@ export default function SubUjianTajwid() {
     return (
       <View style={[styles.dragTextRow, wajibRTL && { flexDirection: 'row-reverse' }]}>
         <Text style={[styles.teksPertanyaan, { color: colors.text }]}>{bagian[0]}</Text>
-        <TouchableOpacity
+        <SoundTouchableOpacity
           ref={dropZoneRef}
           onLayout={ukurDropZone}
           activeOpacity={0.8}
@@ -429,7 +432,7 @@ export default function SubUjianTajwid() {
               ? soalSaatIni.pilihan[userHasPicked as keyof typeof soalSaatIni.pilihan] 
               : (language === "id" ? " Tarik Ke Sini " : " Drag Here ")}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
         <Text style={[styles.teksPertanyaan, { color: colors.text }]}>{bagian[1]}</Text>
       </View>
     );
@@ -460,7 +463,7 @@ export default function SubUjianTajwid() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top"]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top", "bottom"]}>
       <StatusBar barStyle={colors.statusBarStyle} backgroundColor={colors.card} />
       <Stack.Screen options={{ headerShown: false }} />
 
@@ -474,12 +477,12 @@ export default function SubUjianTajwid() {
 
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
-        <TouchableOpacity style={styles.backButton} onPress={() => handleBukaModalKeluar("back")}>
+        <SoundTouchableOpacity style={styles.backButton} onPress={() => handleBukaModalKeluar("back")}>
           <Ionicons name="arrow-back" size={20} color={colors.isDark ? "#4ADE80" : "#16A34A"} />
           <Text style={[styles.backButtonText, { color: colors.isDark ? "#4ADE80" : "#16A34A" }]}>
             {language === "id" ? "Kembali ke Ujian" : "Back to Exam"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           {judul_bab || (language === "id" ? "Ujian Tajwid Surah Al-Fatihah" : "Surah Al-Fatihah Tajweed Exam")}
@@ -489,7 +492,7 @@ export default function SubUjianTajwid() {
         <View style={{ marginBottom: 15 }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.wrapperAngka}>
             {listSoal.map((_, indeks) => (
-              <TouchableOpacity
+              <SoundTouchableOpacity
                 key={indeks}
                 style={[
                   styles.tombolAngka,
@@ -508,7 +511,7 @@ export default function SubUjianTajwid() {
                 >
                   {indeks + 1}
                 </Text>
-              </TouchableOpacity>
+              </SoundTouchableOpacity>
             ))}
           </ScrollView>
         </View>
@@ -615,7 +618,7 @@ export default function SubUjianTajwid() {
             {soalSaatIni && soalSaatIni.pilihan && Object.entries(soalSaatIni.pilihan).map(([abjad, teksOpsi]) => {
               const isSelected = userHasPicked === abjad;
               return (
-                <TouchableOpacity
+                <SoundTouchableOpacity
                   key={abjad}
                   disabled={isReadOnlyState}
                   style={[
@@ -648,7 +651,7 @@ export default function SubUjianTajwid() {
                   >
                     {teksOpsi}
                   </Text>
-                </TouchableOpacity>
+                </SoundTouchableOpacity>
               );
             })}
           </ScrollView>
@@ -656,7 +659,7 @@ export default function SubUjianTajwid() {
 
         {/* --- TOMBOL NAVIGASI BAWAH --- */}
         <View style={styles.navigasiBawah}>
-          <TouchableOpacity
+          <SoundTouchableOpacity
             disabled={indeksAktif === 0}
             style={[styles.tombolNav, indeksAktif === 0 && { opacity: 0.4 }]}
             onPress={() => setIndeksAktif(indeksAktif - 1)}
@@ -664,20 +667,20 @@ export default function SubUjianTajwid() {
             <Text style={styles.teksNav}>
               {language === "id" ? "◄ Sebelumnya" : "◄ Previous"}
             </Text>
-          </TouchableOpacity>
+          </SoundTouchableOpacity>
 
           {indeksAktif === listSoal.length - 1 ? (
-            <TouchableOpacity style={[styles.tombolNav, { backgroundColor: "#16A34A" }]} onPress={handleSelesaiKuis}>
+            <SoundTouchableOpacity style={[styles.tombolNav, { backgroundColor: "#16A34A" }]} onPress={handleSelesaiKuis}>
               <Text style={styles.teksNav}>
                 {language === "id" ? "Selesai ✔" : "Finish ✔"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.tombolNav} onPress={() => setIndeksAktif(indeksAktif + 1)}>
+            <SoundTouchableOpacity style={styles.tombolNav} onPress={() => setIndeksAktif(indeksAktif + 1)}>
               <Text style={styles.teksNav}>
                 {language === "id" ? "Selanjutnya ►" : "Next ►"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           )}
         </View>
       </View>
@@ -733,12 +736,12 @@ export default function SubUjianTajwid() {
                 ? "Selamat, kamu telah menyelesaikan ujian latihan variasi 50 soal ini kawan."
                 : "Congratulations, you have completed this 50-question practice exam."}
             </Text>
-            <TouchableOpacity style={styles.modalButtonUtama} onPress={navigasiKeReview}>
+            <SoundTouchableOpacity style={styles.modalButtonUtama} onPress={navigasiKeReview}>
               <Text style={styles.modalButtonText}>
                 {language === "id" ? "Lihat Review Jawaban ►" : "View Answer Review ►"}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </SoundTouchableOpacity>
+            <SoundTouchableOpacity
               style={[
                 styles.modalButtonSekunder,
                 { backgroundColor: colors.isDark ? "#334155" : "#F1F5F9", borderColor: colors.border },
@@ -748,7 +751,7 @@ export default function SubUjianTajwid() {
               <Text style={[styles.modalButtonTextSekunder, { color: colors.text }]}>
                 {language === "id" ? "Kembali ke Ujian" : "Back to Exam"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </Animated.View>
         </View>
       </Modal>
@@ -774,13 +777,13 @@ export default function SubUjianTajwid() {
                 ? "Apakah kamu yakin ingin keluar? Seluruh progres ujian saat ini akan hilang."
                 : "Are you sure you want to exit? All current exam progress will be lost."}
             </Text>
-            <TouchableOpacity style={styles.modalButtonUtama} onPress={handleTutupModalKeluar}>
+            <SoundTouchableOpacity style={styles.modalButtonUtama} onPress={handleTutupModalKeluar}>
               <Text style={styles.modalButtonText}>
                 {language === "id" ? "Tidak, Lanjutkan Ujian" : "No, Continue Exam"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
 
-            <TouchableOpacity 
+            <SoundTouchableOpacity 
               style={styles.modalButtonKeluarYa} 
               onPress={() => { 
                 setShowExitModal(false); 
@@ -802,7 +805,7 @@ export default function SubUjianTajwid() {
               <Text style={styles.modalButtonTextKeluarYa}>
                 {language === "id" ? "Ya, Saya Yakin Keluar" : "Yes, Exit Exam"}
               </Text>
-            </TouchableOpacity>
+            </SoundTouchableOpacity>
           </Animated.View>
         </View>
       </Modal>

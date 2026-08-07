@@ -9,9 +9,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import SoundTouchableOpacity from "../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
@@ -132,7 +132,7 @@ export default function PdfSeriScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={["top", "bottom"]}
     >
       <StatusBar
         barStyle={colors.statusBarStyle}
@@ -151,7 +151,7 @@ export default function PdfSeriScreen() {
       {/* ==================== KONTEN UTAMA ==================== */}
       <View style={styles.mainContent}>
         {/* TOMBOL KEMBALI */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <SoundTouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons
             name="arrow-back"
             size={20}
@@ -165,7 +165,7 @@ export default function PdfSeriScreen() {
           >
             {language === "id" ? "Kembali ke Menu Materi" : "Back to Material Menu"}
           </Text>
-        </TouchableOpacity>
+        </SoundTouchableOpacity>
 
         {/* CONTAINER VIEW UNTUK MENAMPILKAN PDF SECARA FLEKSIBEL */}
         <View
