@@ -106,7 +106,13 @@ export default function App() {
       const json = await response.json();
 
       if (json.success) {
-        await AsyncStorage.setItem("userSession", JSON.stringify(json.user));
+        const sessionUser = {
+          ...(json.user || {}),
+          username: json.user?.username || "",
+          email: json.user?.email || email,
+          auth_token: json.user?.auth_token || "",
+        };
+        await AsyncStorage.setItem("userSession", JSON.stringify(sessionUser));
 
         Toast.show({
           type: "success",

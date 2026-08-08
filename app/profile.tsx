@@ -199,7 +199,7 @@ export default function ProfileScreen() {
         setNewUsername(parsedSession.username || "");
 
         const response = await apiFetch(`${API_URL}/get-profile.php?email=${parsedSession.email}`,
-          { headers: { "ngrok-skip-browser-warning": "true" } },
+          {},
         );
         const data = await response.json();
 
@@ -283,7 +283,6 @@ export default function ProfileScreen() {
         {
           method: "POST",
           body: formData,
-          headers: { "ngrok-skip-browser-warning": "true" },
         },
       );
 
@@ -298,9 +297,8 @@ export default function ProfileScreen() {
           const delResp = await apiFetch(`${API_URL}/delete-profile.php?email=${encodeURIComponent(userData.email)}`,
             {
               method: "POST",
-              headers: { "ngrok-skip-browser-warning": "true" },
-            },
-          );
+        },
+      );
           const delText = await delResp.text();
           const delResult = JSON.parse(delText);
           if (delResult.status === "success" || delResult.success) {
@@ -411,7 +409,6 @@ export default function ProfileScreen() {
         {
           method: "POST",
           body: formData,
-          headers: { "ngrok-skip-browser-warning": "true" },
         },
       );
 
@@ -491,7 +488,6 @@ export default function ProfileScreen() {
         {
           method: "POST",
           body: formData,
-          headers: { "ngrok-skip-browser-warning": "true" },
         },
       );
 
@@ -507,7 +503,6 @@ export default function ProfileScreen() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
             },
             body: JSON.stringify({
               email: userData?.email,

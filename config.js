@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = "https://ambativasi.page.gd/ambativasi-api";
 
@@ -37,8 +38,22 @@ function decryptSlowAES(html) {
   return xored.map((b) => (b < 16 ? "0" : "") + b.toString(16)).join("");
 }
 
-function buildHeaders(options, withCookie) {
+async function buildHeaders(options, withCookie) {
   const headers = { ...options.headers };
+
+  // 🔐 AUTENTIKASI TOKEN: kirim auth_token sesi (dari login) ke semua request
+  try {
+    const session = await AsyncStorage.getItem("userSession");
+    if (session) {
+      const parsed = JSON.parse(session);
+      if (parsed && parsed.auth_token) {
+        headers.Authorization = `Bearer ${parsed.auth_token}`;
+      }
+    }
+  } catch (e) {
+    // abaikan bila session belum tersedia / corrupt
+  }
+
   if (withCookie && challengeCookie) {
     headers.Cookie = `__test=${challengeCookie}`;
   }
@@ -46,7 +61,7 @@ function buildHeaders(options, withCookie) {
 }
 
 async function fetchWithChallenge(url, options = {}) {
-  let res = await fetch(url, { ...options, headers: buildHeaders(options, true) });
+  let res = await fetch(url, { ...options, headers: await buildHeaders(options, true) });
   const contentType = res.headers.get("content-type") || "";
 
   if (!contentType.includes("text/html")) {
@@ -58,7 +73,7 @@ async function fetchWithChallenge(url, options = {}) {
   if (text.includes("slowAES.decrypt") || text.includes("aes.js")) {
     challengeCookie = decryptSlowAES(text);
     if (challengeCookie) {
-      res = await fetch(url, { ...options, headers: buildHeaders(options, true) });
+      res = await fetch(url, { ...options, headers: await buildHeaders(options, true) });
       return res;
     }
   }

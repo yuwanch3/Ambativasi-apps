@@ -26,7 +26,7 @@ import { useLanguage } from "../../../../context/LanguageContext";
 const { width } = Dimensions.get("window");
 import API_URL, { apiFetch } from "../../../../config";
 
-export default function pdfBab1Screen() {
+export default function PdfFundamentalScreen() {
   // --- TEMA & BAHASA GLOBAL REAL-TIME ---
   const { colors } = useTheme();
   const { t, language } = useLanguage();

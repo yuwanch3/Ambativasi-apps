@@ -678,6 +678,112 @@ export default function App() {
   // ----------------------------------------------------------
   const activeSurah = SURAH_OPTIONS[currentSurahIndex] || SURAH_OPTIONS[0];
 
+  // 5I. EVENT SPEECH RECOGNITION
+  // ----------------------------------------------------------
+  // Event ketika mikrofon mulai mendengarkan.
+  useSpeechRecognitionEvent("start", () => {
+    setIsPreparing(false);
+    setIsRecognizing(true);
+    stopRequestedRef.current = false;
+
+    setStatusMessage(tr("speech_reading_ayah", { ayah: activeVerse.ayah }));
+  });
+
+  // Event ketika hasil suara masuk secara real-time.
+  useSpeechRecognitionEvent("result", (event: any) => {
+    if (stopRequestedRef.current || ayahAcceptedRef.current) {
+      return;
+    }
+
+    const transcript = event.results[0]?.transcript?.trim() ?? "";
+
+    if (!transcript) {
+      return;
+    }
+
+    const combinedTranscript = mergeTranscriptParts(
+      finalizedTranscriptRef.current,
+      transcript,
+    );
+
+    latestTranscriptRef.current = combinedTranscript;
+    setLiveTranscript(combinedTranscript);
+
+    const progress = getVerseProgress(combinedTranscript, activeVerse.text);
+
+    latestProgressRef.current = progress;
+    setRecognizedWordStatuses(progress.statuses);
+
+    if (event.isFinal) {
+      finalizedTranscriptRef.current = combinedTranscript;
+    }
+
+    if (progress.isComplete) {
+      // Hanya lanjut otomatis jika transkrip sudah final,
+      // agar hasil sementara (partial) tidak memicu perpindahan ayat.
+      if (event.isFinal) {
+        completeCurrentAyahAutomatically();
+      }
+
+      return;
+    }
+
+    if (progress.hasWrong) {
+      setStatusMessage(
+        tr("speech_error_ayah", { ayah: activeVerse.ayah }),
+      );
+      return;
+    }
+
+    if (progress.matchedWords > 0) {
+      setStatusMessage(tr("speech_reading_ayah", { ayah: activeVerse.ayah }));
+      return;
+    }
+
+    setStatusMessage(t("speech_listening"));
+  });
+
+  // Event ketika suara tidak cocok atau tidak dikenali.
+  useSpeechRecognitionEvent("nomatch", () => {
+    if (stopRequestedRef.current || ayahAcceptedRef.current) {
+      return;
+    }
+
+    setStatusMessage(tr("speech_not_recognized", { ayah: activeVerse.ayah }));
+  });
+
+  // Event ketika speech recognition mengalami error.
+  useSpeechRecognitionEvent("error", (event: any) => {
+    if (
+      event.error === "aborted" ||
+      stopRequestedRef.current ||
+      ayahAcceptedRef.current
+    ) {
+      return;
+    }
+    autoReadingSessionRef.current = false;
+    isAutoAdvancingRef.current = false;
+
+    setIsPreparing(false);
+    setIsRecognizing(false);
+
+    setStatusMessage(
+      tr("speech_recognition_failed", { message: event.message }),
+    );
+  });
+
+  // Event ketika proses mendengarkan berakhir.
+  useSpeechRecognitionEvent("end", () => {
+    setIsPreparing(false);
+    setIsRecognizing(false);
+
+    // Safety net: jika transkrip akhir sudah lengkap dan benar
+    // tetapi engine tidak mengirim event final, tetap lanjut.
+    if (latestProgressRef.current?.isComplete && !ayahAcceptedRef.current) {
+      completeCurrentAyahAutomatically();
+    }
+  });
+
   // Mencegah crash jika activeSurah atau verses bernilai undefined
   if (!activeSurah || !activeSurah.verses || activeSurah.verses.length === 0) {
     return (
@@ -879,111 +985,6 @@ export default function App() {
   };
 
   // ----------------------------------------------------------
-  // 5I. EVENT SPEECH RECOGNITION
-  // ----------------------------------------------------------
-  // Event ketika mikrofon mulai mendengarkan.
-  useSpeechRecognitionEvent("start", () => {
-    setIsPreparing(false);
-    setIsRecognizing(true);
-    stopRequestedRef.current = false;
-
-    setStatusMessage(tr("speech_reading_ayah", { ayah: activeVerse.ayah }));
-  });
-
-  // Event ketika hasil suara masuk secara real-time.
-  useSpeechRecognitionEvent("result", (event: any) => {
-    if (stopRequestedRef.current || ayahAcceptedRef.current) {
-      return;
-    }
-
-    const transcript = event.results[0]?.transcript?.trim() ?? "";
-
-    if (!transcript) {
-      return;
-    }
-
-    const combinedTranscript = mergeTranscriptParts(
-      finalizedTranscriptRef.current,
-      transcript,
-    );
-
-    latestTranscriptRef.current = combinedTranscript;
-    setLiveTranscript(combinedTranscript);
-
-    const progress = getVerseProgress(combinedTranscript, activeVerse.text);
-
-    latestProgressRef.current = progress;
-    setRecognizedWordStatuses(progress.statuses);
-
-    if (event.isFinal) {
-      finalizedTranscriptRef.current = combinedTranscript;
-    }
-
-    if (progress.isComplete) {
-      // Hanya lanjut otomatis jika transkrip sudah final,
-      // agar hasil sementara (partial) tidak memicu perpindahan ayat.
-      if (event.isFinal) {
-        completeCurrentAyahAutomatically();
-      }
-
-      return;
-    }
-
-    if (progress.hasWrong) {
-      setStatusMessage(
-        tr("speech_error_ayah", { ayah: activeVerse.ayah }),
-      );
-      return;
-    }
-
-    if (progress.matchedWords > 0) {
-      setStatusMessage(tr("speech_reading_ayah", { ayah: activeVerse.ayah }));
-      return;
-    }
-
-    setStatusMessage(t("speech_listening"));
-  });
-
-  // Event ketika suara tidak cocok atau tidak dikenali.
-  useSpeechRecognitionEvent("nomatch", () => {
-    if (stopRequestedRef.current || ayahAcceptedRef.current) {
-      return;
-    }
-
-    setStatusMessage(tr("speech_not_recognized", { ayah: activeVerse.ayah }));
-  });
-
-  // Event ketika speech recognition mengalami error.
-  useSpeechRecognitionEvent("error", (event: any) => {
-    if (
-      event.error === "aborted" ||
-      stopRequestedRef.current ||
-      ayahAcceptedRef.current
-    ) {
-      return;
-    }
-    autoReadingSessionRef.current = false;
-    isAutoAdvancingRef.current = false;
-
-    setIsPreparing(false);
-    setIsRecognizing(false);
-
-    setStatusMessage(
-      tr("speech_recognition_failed", { message: event.message }),
-    );
-  });
-
-  // Event ketika proses mendengarkan berakhir.
-  useSpeechRecognitionEvent("end", () => {
-    setIsPreparing(false);
-    setIsRecognizing(false);
-
-    // Safety net: jika transkrip akhir sudah lengkap dan benar
-    // tetapi engine tidak mengirim event final, tetap lanjut.
-    if (latestProgressRef.current?.isComplete && !ayahAcceptedRef.current) {
-      completeCurrentAyahAutomatically();
-    }
-  });
 
   // ----------------------------------------------------------
   // MEMULAI REKAMAN UNTUK SURAT DAN AYAT TERTENTU
