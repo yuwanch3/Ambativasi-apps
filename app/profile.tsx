@@ -19,7 +19,7 @@ import {
   View,
 } from "react-native";
 import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
 import { Navbar } from "../components/navbar";
@@ -42,6 +42,9 @@ export default function ProfileScreen() {
   // --- TEMA & BAHASA GLOBAL REAL-TIME ---
   const { colors } = useTheme();
   const { language, t } = useLanguage();
+
+  // --- SAFE AREA INSET (TOM BOTTOM NAVIGASI HP / NOTCH) ---
+  const insets = useSafeAreaInsets();
 
   // --- STATE LAYOUT & SIDEBAR ---
   const [loading, setLoading] = useState(true);
@@ -812,7 +815,11 @@ export default function ProfileScreen() {
           <View
             style={[
               styles.photoOptionSheet,
-              { backgroundColor: colors.card, borderColor: colors.border },
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                paddingBottom: insets.bottom + 20,
+              },
             ]}
           >
             <View
@@ -1217,7 +1224,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
-    paddingBottom: Platform.OS === "ios" ? 34 : 24,
     borderWidth: 1,
     borderBottomWidth: 0,
   },
