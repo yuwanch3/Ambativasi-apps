@@ -113,6 +113,7 @@ src/
 - ⚡ **Perbaikan hook speech recognition**: pemanggilan `useSpeechRecognitionEvent` dipindah ke atas *early return* — mencegah pelanggaran urutan hooks.
 - 🌍 **Migrasi backend** dari localhost ke server InfinityFree (`ambativasi.page.gd`).
 - 🧰 **Penyempurnaan konfigurasi**: file `.gitattributes` agar line-ending kode konsisten lintas platform.
+- 🐛 **Perbaikan crash saat membuka aplikasi** (`ClassNotFoundException: AnyTypeCache`): dependency `expo-asset` kini di-pin ke `~12.0.13` (SDK 54), mencegah npm menaikkan versi SDK 55 secara tidak sengaja lewat `expo-audio`.
 
 ### v1.0.3
 
