@@ -49,10 +49,6 @@ export default function MateriScreen() {
   const [isMateriOpen, setIsMateriOpen] = useState(false);
   const [dropdownAnim] = useState(new Animated.Value(0));
 
-  // --- SUB-DROPDOWN UNTUK PILIHAN BAHASA ---
-  const [isLangOpen, setIsLangOpen] = useState(false);
-  const [langAnim] = useState(new Animated.Value(0));
-
   useEffect(() => {
     checkSession();
   }, []);
@@ -112,27 +108,7 @@ export default function MateriScreen() {
     const toValue = isMateriOpen ? 0 : 1;
     setIsMateriOpen(!isMateriOpen);
 
-    if (isMateriOpen) {
-      setIsLangOpen(false);
-      Animated.timing(langAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }).start();
-    }
-
     Animated.timing(dropdownAnim, {
-      toValue,
-      duration: 250,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const toggleLangDropdown = () => {
-    const toValue = isLangOpen ? 0 : 1;
-    setIsLangOpen(!isLangOpen);
-
-    Animated.timing(langAnim, {
       toValue,
       duration: 250,
       useNativeDriver: false,
@@ -200,27 +176,12 @@ export default function MateriScreen() {
     outputRange: ["0deg", "180deg"],
   });
 
-  const langArrowRotation = langAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
-  });
-
   const dropdownHeight = dropdownAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, isLangOpen ? 150 : 100],
-  });
-
-  const langDropdownHeight = langAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 45],
+    outputRange: [0, 100],
   });
 
   const dropdownOpacity = dropdownAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 0, 1],
-  });
-
-  const langDropdownOpacity = langAnim.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: [0, 0, 1],
   });
@@ -348,7 +309,11 @@ export default function MateriScreen() {
                         styles.subMenuItem,
                         { borderColor: colors.border },
                       ]}
-                      onPress={toggleLangDropdown}
+                      onPress={() =>
+                        router.push(
+                          "/materi/tajwid-islam/al-fatihah/pdfsurahAl-fatihah" as any,
+                        )
+                      }
                       activeOpacity={0.7}
                     >
                       <View
@@ -374,58 +339,12 @@ export default function MateriScreen() {
                             : "Open PDF Material (tajweed material)"}
                         </Text>
                       </View>
-                      <Animated.View
-                        style={{ transform: [{ rotate: langArrowRotation }] }}
-                      >
-                        <Ionicons
-                          name="chevron-forward"
-                          size={16}
-                          color={colors.subtext}
-                        />
-                      </Animated.View>
+                      <Ionicons
+                        name="chevron-forward"
+                        size={16}
+                        color={colors.subtext}
+                      />
                     </SoundTouchableOpacity>
-
-                    <Animated.View
-                      style={[
-                        styles.langDropdownContent,
-                        {
-                          backgroundColor: colors.isDark
-                            ? "#1E293B"
-                            : "#F1F5F9",
-                          height: langDropdownHeight,
-                          opacity: langDropdownOpacity,
-                        },
-                      ]}
-                    >
-                      <SoundTouchableOpacity
-                        style={[
-                          styles.langMenuItem,
-                          { borderColor: colors.border },
-                        ]}
-                        onPress={() =>
-                          router.push(
-                            "/materi/tajwid-islam/al-fatihah/pdfsurahAl-fatihah" as any,
-                          )
-                        }
-                      >
-                        <View
-                          style={[
-                            styles.langDot,
-                            { backgroundColor: colors.subtext },
-                          ]}
-                        />
-                        <Text
-                          style={[
-                            styles.langMenuItemText,
-                            { color: colors.text },
-                          ]}
-                        >
-                          {language === "id"
-                            ? "surah al-fatihah"
-                            : "Surah Al-Fatihah"}
-                        </Text>
-                      </SoundTouchableOpacity>
-                    </Animated.View>
 
                     <SoundTouchableOpacity
                       style={[styles.subMenuItem, { borderBottomWidth: 0 }]}
@@ -658,29 +577,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     marginLeft: 10,
-  },
-
-  langDropdownContent: {
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  langMenuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-  },
-  langDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 10,
-    marginLeft: 4,
-  },
-  langMenuItemText: {
-    fontSize: 13,
-    fontWeight: "500",
   },
 
   // STYLES MODAL KONFIRMASI

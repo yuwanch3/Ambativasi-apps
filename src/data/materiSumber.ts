@@ -83,7 +83,7 @@ export const SUMBER_MATERI_CHEMICAL_EOR: Record<string, MateriSumber> = {
     subId: "Mobility Ratio, HPAM & Sweep Efficiency",
     subEn: "Mobility Ratio, HPAM & Sweep Efficiency",
     pdfUrl:
-      "https://www.nstauthority.co.uk/media/4283/polymer-eor-industry-starter-pack-ver3.pdf",
+      "https://docs.google.com/uc?export=download&id=1bBRAXG-KKf70t6s2mF841EjbgpasWdM-",
     videoId: "gF1xFFFw2SY",
     sumberData: "CHEMICAL_EOR_POLIMER",
   },

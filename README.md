@@ -101,7 +101,14 @@ src/
 
 ## 📋 Changelog
 
-### v1.0.4 (terbaru)
+### v1.0.5 (terbaru)
+
+- 🧭 **Navigasi surat & ayat baru di fitur Speech Al-Qur'an**: header dengan panah ‹ › untuk berpindah surat, plus dropdown pilih surat & pilih ayat langsung dari atas — mengikuti tema gelap/terang dan multi-bahasa.
+- 🗂️ **Menu Materi Tajwid Al-Fatihah dirapikan**: klik "Buka Materi PDF (materi tajwid)" kini langsung membuka file PDF tanpa dropdown bertingkat (membersihkan sisa kode dari materi Bahasa Jepang).
+- 📄 **Perbaikan sumber materi PDF Chemical EOR Polimer** (`Mobility Ratio, HPAM & Sweep Efficiency`) ke file Google Drive yang valid — viewer PDF langsung terbuka tanpa unduhan rusak.
+- 🧹 **Pembersihan berkas suara**: memastikan seluruh file sound di `assets/sounds` benar-benar terpakai (efek tombol, kuis, dan notifikasi aplikasi).
+
+### v1.0.4
 
 - ⬆️ **Pembaruan versi** ke 1.0.4 (build 2026).
 - 🔐 **Autentikasi token** pada semua request API (`Authorization: Bearer <token>`) — sesi login lebih aman dan konsisten.

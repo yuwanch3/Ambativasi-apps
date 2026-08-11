@@ -1478,26 +1478,95 @@ body.transitioning .next {
         keyboardShouldPersistTaps="handled"
       >
         {/* ================================================== */}
-        {/* TOMBOL PILIH SURAT DAN JUDUL SURAT */}
+        {/* HEADER NAVIGASI SURAT DAN AYAT */}
         {/* ================================================== */}
-        <View style={styles.titleRow}>
-          <Text style={styles.surahTitle}>
-            {activeSurah.name.toUpperCase()}
-          </Text>
+        <View style={styles.topNavigationContainer}>
+          <View style={styles.surahNavigationRow}>
+            <Pressable
+              style={[
+                styles.surahArrowButton,
+                currentSurahIndex === 0 && styles.disabledNavigationButton,
+              ]}
+              disabled={
+                currentSurahIndex === 0 ||
+                isRecognizing ||
+                isPreparing ||
+                isVerseTransitioning
+              }
+              onPress={() => selectSurah(currentSurahIndex - 1)}
+            >
+              <Text style={styles.surahArrowText}>‹</Text>
+            </Pressable>
 
-          <Pressable
-            style={styles.selectSurahButton}
-            onPress={() => {
-              playButtonSound();
+            <View style={styles.surahNavigationTitle}>
+              <Text style={styles.surahNavigationTitleText}>
+                {activeSurah.name.toUpperCase()}
+              </Text>
+            </View>
 
-              setIsSurahPickerVisible((currentValue) => !currentValue);
+            <Pressable
+              style={[
+                styles.surahArrowButton,
+                currentSurahIndex === SURAH_OPTIONS.length - 1 &&
+                  styles.disabledNavigationButton,
+              ]}
+              disabled={
+                currentSurahIndex === SURAH_OPTIONS.length - 1 ||
+                isRecognizing ||
+                isPreparing ||
+                isVerseTransitioning
+              }
+              onPress={() => selectSurah(currentSurahIndex + 1)}
+            >
+              <Text style={styles.surahArrowText}>›</Text>
+            </Pressable>
+          </View>
 
-              setIsAyahPickerVisible(false);
-            }}
-            disabled={isRecognizing || isPreparing}
-          >
-            <Text style={styles.selectSurahButtonText}>{t("speech_select_surah")}</Text>
-          </Pressable>
+          <View style={styles.topControlRow}>
+            <Pressable
+              style={styles.headerDropdown}
+              onPress={() => {
+                playButtonSound();
+
+                setIsSurahPickerVisible((currentValue) => !currentValue);
+
+                setIsAyahPickerVisible(false);
+              }}
+              disabled={
+                isRecognizing || isPreparing || isVerseTransitioning
+              }
+            >
+              <Text style={styles.headerDropdownText}>
+                {activeSurah.name}
+              </Text>
+
+              <Text style={styles.headerDropdownArrow}>
+                ▲{'\n'}▼
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.ayahNumberDropdown}
+              onPress={() => {
+                playButtonSound();
+
+                setIsAyahPickerVisible((currentValue) => !currentValue);
+
+                setIsSurahPickerVisible(false);
+              }}
+              disabled={
+                isRecognizing || isPreparing || isVerseTransitioning
+              }
+            >
+              <Text style={styles.headerDropdownText}>
+                {activeVerse.ayah}
+              </Text>
+
+              <Text style={styles.headerDropdownArrow}>
+                ▲{'\n'}▼
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* DAFTAR SURAT YANG MUNCUL SETELAH TOMBOL PILIH SURAT DITEKAN */}
@@ -1534,35 +1603,9 @@ body.transitioning .next {
         ) : null}
 
         {/* ================================================== */}
-        {/* KARTU TIGA AYAT DAN TOMBOL PILIH AYAT */}
+        {/* KARTU TIGA AYAT */}
         {/* ================================================== */}
         <View style={styles.currentAyahCard}>
-          <View style={styles.cardHeaderRow}>
-            <Text style={styles.cardHeaderText}>
-              {tr("speech_surah_label", { number: activeSurah.number })}
-            </Text>
-
-            <View style={styles.ayahHeaderRight}>
-              <Text style={styles.cardHeaderText}>
-                {tr("speech_ayah_label", { number: activeVerse.ayah })}
-              </Text>
-
-              <Pressable
-                style={styles.selectAyahButton}
-                onPress={() => {
-                  playButtonSound();
-
-                  setIsAyahPickerVisible((currentValue) => !currentValue);
-
-                  setIsSurahPickerVisible(false);
-                }}
-                disabled={isRecognizing || isPreparing || isVerseTransitioning}
-              >
-                <Text style={styles.selectAyahButtonText}>{t("speech_select_ayah")}</Text>
-              </Pressable>
-            </View>
-          </View>
-
           <WebView
             key={`${activeSurah.number}-${activeVerse.ayah}-${recognizedWordStatuses.join("-")}`}
             source={{ html: threeAyahHtml }}
@@ -1776,32 +1819,80 @@ const createStyles = (colors: ThemeColors) => {
       paddingTop: 36,
       paddingBottom: 40,
     },
-    titleRow: {
-      position: "relative",
-      minHeight: 46,
+    // Style header navigasi surat & ayat.
+    topNavigationContainer: {
+      marginTop: 12,
+    },
+    surahNavigationRow: {
       flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    surahArrowButton: {
+      width: 52,
+      height: 52,
       alignItems: "center",
       justifyContent: "center",
     },
-    surahTitle: {
+    surahArrowText: {
+      color: accent,
+      fontSize: 42,
+      fontWeight: "300",
+    },
+    disabledNavigationButton: {
+      opacity: 0.3,
+    },
+    surahNavigationTitle: {
+      flex: 1,
+      alignItems: "center",
+    },
+    surahNavigationTitleText: {
       color: colors.text,
-      fontSize: 28,
-      fontWeight: "500",
+      fontSize: 21,
+      fontWeight: "600",
       textAlign: "center",
     },
-    // Style tombol Pilih Surat.
-    selectSurahButton: {
-      position: "absolute",
-      right: 0,
-      paddingHorizontal: 11,
-      paddingVertical: 8,
-      borderRadius: 8,
+    topControlRow: {
+      marginTop: 14,
+      flexDirection: "row",
+      gap: 12,
+    },
+    headerDropdown: {
+      flex: 1,
+      minHeight: 56,
+      paddingLeft: 18,
+      paddingRight: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 14,
       backgroundColor: colors.inputBg,
     },
-    selectSurahButtonText: {
+    ayahNumberDropdown: {
+      width: 105,
+      minHeight: 56,
+      paddingLeft: 18,
+      paddingRight: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 14,
+      backgroundColor: colors.inputBg,
+    },
+    headerDropdownText: {
       color: colors.text,
-      fontSize: 12,
-      fontWeight: "600",
+      fontSize: 21,
+      fontWeight: "500",
+    },
+    headerDropdownArrow: {
+      color: colors.subtext,
+      fontSize: 11,
+      lineHeight: 12,
+      textAlign: "center",
     },
     // Style daftar pilihan surat.
     completedSurahCard: {
@@ -1842,33 +1933,6 @@ const createStyles = (colors: ThemeColors) => {
       paddingVertical: 16,
       borderRadius: 22,
       backgroundColor: colors.card,
-    },
-    cardHeaderRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    cardHeaderText: {
-      color: colors.text,
-      fontSize: 16,
-      fontWeight: "500",
-    },
-    ayahHeaderRight: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-    },
-    // Style tombol Pilih Ayat.
-    selectAyahButton: {
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 8,
-      backgroundColor: "#4f46b8",
-    },
-    selectAyahButtonText: {
-      color: "#ffffff",
-      fontSize: 12,
-      fontWeight: "700",
     },
     // Style kartu WebView tiga ayat.
     quranWebView: {
