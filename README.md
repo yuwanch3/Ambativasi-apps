@@ -101,7 +101,15 @@ src/
 
 ## 📋 Changelog
 
-### v1.0.5 (terbaru)
+### v1.0.6 (terbaru)
+
+- 👤 **Ubah Email & Kata Sandi di halaman terpisah**: menu "Ubah Email" dan "Ubah Kata Sandi" di Pengaturan kini membuka halaman khusus (bukan modal) lengkap dengan Navbar, Sidebar, tema gelap/terang, dan multi-bahasa.
+- 🔑 **Verifikasi identitas saat ubah email**: pengguna memasukkan email terdaftar, lalu sistem mengirim **kode verifikasi 6 digit** ke email tersebut (berlaku 5 menit, sekali pakai) sebagai konfirmasi sebelum email diganti.
+- 🛡️ **Proteksi anti-spam kirim kode**: jeda minimal 60 detik antar pengiriman kode verifikasi — tidak bisa di-spam.
+- 🔐 **Ubah kata sandi lebih aman**: form kata sandi lama → baru + konfirmasi dengan validasi panjang (min. 8 karakter), kecocokan, dan beda dari kata sandi lama.
+- 🧹 **Pembersihan berkas suara yang tidak terpakai**: file `alert.mp3`, `correct.mp3`, `navigate.mp3`, `wrong.mp3` dihapus beserta kode `playAlert/playCorrect/playNavigate/playWrong` agar aplikasi lebih ringan.
+
+### v1.0.5
 
 - 🧭 **Navigasi surat & ayat baru di fitur Speech Al-Qur'an**: header dengan panah ‹ › untuk berpindah surat, plus dropdown pilih surat & pilih ayat langsung dari atas — mengikuti tema gelap/terang dan multi-bahasa.
 - 🗂️ **Menu Materi Tajwid Al-Fatihah dirapikan**: klik "Buka Materi PDF (materi tajwid)" kini langsung membuka file PDF tanpa dropdown bertingkat (membersihkan sisa kode dari materi Bahasa Jepang).

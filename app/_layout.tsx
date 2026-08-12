@@ -107,6 +107,16 @@ function RootLayoutNav() {
             options={{ headerShown: false }}
           />
 
+          {/* Halaman Ubah Email & Kata Sandi */}
+          <Stack.Screen
+            name="change-email"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="change-password"
+            options={{ headerShown: false }}
+          />
+
           {/* Halaman Tilawah */}
 
           {/* Halaman Ujian */}

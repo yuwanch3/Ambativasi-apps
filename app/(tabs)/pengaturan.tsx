@@ -63,7 +63,6 @@ export default function PengaturanScreen() {
 
   // --- STATE LAYOUT & SIDEBAR ---
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [slideAnim] = useState(new Animated.Value(-width));
   const [userData, setUserData] = useState<{
@@ -85,8 +84,6 @@ export default function PengaturanScreen() {
 
   // --- STATE MODAL INTERAKSI ---
   const [activeModal, setActiveModal] = useState<
-    | "password"
-    | "email"
     | "theme"
     | "language"
     | "faq"
@@ -95,19 +92,6 @@ export default function PengaturanScreen() {
     | "clear_cache"
     | null
   >(null);
-
-  // --- STATE FORM INPUT KATA SANDI ---
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  // --- STATE VISIBILITAS KATA SANDI (TOGGLE MATA) ---
-  const [showOldPass, setShowOldPass] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
-
-  // --- STATE FORM INPUT EMAIL ---
-  const [newEmail, setNewEmail] = useState("");
 
   useFocusEffect(
     React.useCallback(() => {
@@ -470,252 +454,6 @@ export default function PengaturanScreen() {
     });
   };
 
-  const handleSavePassword = async () => {
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Harap isi semua bidang kata sandi!"
-            : "Please fill in all password fields!",
-        position: "top",
-        visibilityTime: 2500,
-      });
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Kata sandi baru minimal harus 6 karakter!"
-            : "New password must be at least 6 characters!",
-        position: "top",
-        visibilityTime: 2500,
-      });
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Konfirmasi kata sandi baru tidak cocok!"
-            : "New password confirmation does not match!",
-        position: "top",
-        visibilityTime: 2500,
-      });
-      return;
-    }
-
-    if (oldPassword === newPassword) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Kata sandi baru harus berbeda dari kata sandi lama!"
-            : "New password must be different from the old password!",
-        position: "top",
-        visibilityTime: 2500,
-      });
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      const response = await apiFetch(`${API_URL}/change-password.php`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: userData?.email,
-            old_password: oldPassword,
-            new_password: newPassword,
-          }),
-        },
-      );
-
-      const rawText = await response.text();
-      let result;
-      try {
-        result = JSON.parse(rawText);
-      } catch (e) {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Error Server" : "Server Error",
-          text2:
-            language === "id"
-              ? "Respon dari server tidak valid!"
-              : "Invalid server response!",
-          position: "top",
-          visibilityTime: 2500,
-        });
-        return;
-      }
-
-      if (result.status === "success" || result.success) {
-        Toast.show({
-          type: "success",
-          text1: language === "id" ? "Sukses" : "Success",
-          text2:
-            language === "id"
-              ? "Kata sandi kamu berhasil diperbarui!"
-              : "Your password has been updated successfully!",
-          position: "top",
-          visibilityTime: 2500,
-        });
-        setOldPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-        setShowOldPass(false);
-        setShowNewPass(false);
-        setShowConfirmPass(false);
-        setActiveModal(null);
-      } else {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Gagal" : "Failed",
-          text2:
-            result.message ||
-            (language === "id"
-              ? "Kata sandi lama tidak sesuai!"
-              : "Incorrect old password!"),
-          position: "top",
-          visibilityTime: 2500,
-        });
-      }
-    } catch (error) {
-      console.log("Error update password:", error);
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Error Koneksi" : "Connection Error",
-        text2:
-          language === "id"
-            ? "Gagal memperbarui kata sandi."
-            : "Failed to update password.",
-        position: "top",
-        visibilityTime: 2500,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleSaveEmail = async () => {
-    const trimmedEmail = newEmail.trim().toLowerCase();
-
-    if (!trimmedEmail || !trimmedEmail.includes("@")) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Masukkan alamat email yang valid!"
-            : "Please enter a valid email address!",
-        position: "top",
-        visibilityTime: 2500,
-      });
-      return;
-    }
-
-    if (trimmedEmail === userData?.email) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Email baru harus berbeda dari email saat ini!"
-            : "New email must be different from current email!",
-        position: "top",
-        visibilityTime: 2500,
-      });
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      const response = await apiFetch(`${API_URL}/update-email.php`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            current_email: userData?.email,
-            new_email: trimmedEmail,
-          }),
-        },
-      );
-
-      const rawText = await response.text();
-      const result = JSON.parse(rawText);
-
-      if (result.status === "success" || result.success) {
-        const currentSessionRaw = await AsyncStorage.getItem("userSession");
-        let sessionData = currentSessionRaw
-          ? JSON.parse(currentSessionRaw)
-          : {};
-        sessionData.email = trimmedEmail;
-
-        await AsyncStorage.setItem("userSession", JSON.stringify(sessionData));
-
-        setUserData({
-          username: userData?.username || "User",
-          email: trimmedEmail,
-        });
-
-        Toast.show({
-          type: "success",
-          text1: language === "id" ? "Sukses" : "Success",
-          text2:
-            language === "id"
-              ? "Alamat email berhasil diperbarui!"
-              : "Email address updated successfully!",
-          position: "top",
-          visibilityTime: 2500,
-        });
-        setNewEmail("");
-        setActiveModal(null);
-      } else {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Gagal" : "Failed",
-          text2:
-            result.message ||
-            (language === "id"
-              ? "Gagal memperbarui email."
-              : "Failed to update email."),
-          position: "top",
-          visibilityTime: 2500,
-        });
-      }
-    } catch (error) {
-      console.log("Error update email:", error);
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Error Koneksi" : "Connection Error",
-        text2:
-          language === "id"
-            ? "Gagal memperbarui email."
-            : "Failed to update email.",
-        position: "top",
-        visibilityTime: 2500,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   if (loading) {
     return (
       <View
@@ -765,7 +503,7 @@ export default function PengaturanScreen() {
         >
           <SoundTouchableOpacity
             style={styles.rowItem}
-            onPress={() => setActiveModal("email")}
+            onPress={() => router.push("/change-email")}
           >
             <View
               style={[
@@ -790,7 +528,7 @@ export default function PengaturanScreen() {
 
           <SoundTouchableOpacity
             style={styles.rowItem}
-            onPress={() => setActiveModal("password")}
+            onPress={() => router.push("/change-password")}
           >
             <View
               style={[
@@ -1017,7 +755,7 @@ export default function PengaturanScreen() {
             Ambativasi App
           </Text>
           <Text style={[styles.versionNumber, { color: colors.subtext }]}>
-            Versi 1.0.5 (Build 2026)
+            Versi 1.0.6 (Build 2026)
           </Text>
         </View>
       </ScrollView>
@@ -1301,190 +1039,6 @@ export default function PengaturanScreen() {
                 </Text>
               </SoundTouchableOpacity>
             </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* ==================== MODAL: UBAH KATA SANDI ==================== */}
-      <Modal
-        visible={activeModal === "password"}
-        transparent
-        animationType="slide"
-      >
-        <View
-          style={[
-            styles.modalOverlay,
-            { backgroundColor: colors.modalOverlay },
-          ]}
-        >
-          <View style={[styles.modalCard, { backgroundColor: colors.card }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                {t("change_password")}
-              </Text>
-              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
-                <Ionicons name="close" size={24} color={colors.subtext} />
-              </SoundTouchableOpacity>
-            </View>
-
-            {/* Input Kata Sandi Lama */}
-            <View
-              style={[
-                styles.passwordInputContainer,
-                { backgroundColor: colors.inputBg, borderColor: colors.border },
-              ]}
-            >
-              <TextInput
-                style={[styles.inputFieldPassword, { color: colors.text }]}
-                placeholder={
-                  language === "id" ? "Kata Sandi Lama" : "Old Password"
-                }
-                placeholderTextColor={colors.subtext}
-                secureTextEntry={!showOldPass}
-                value={oldPassword}
-                onChangeText={setOldPassword}
-              />
-              <SoundTouchableOpacity
-                style={styles.eyeIconWrapper}
-                onPress={() => setShowOldPass(!showOldPass)}
-              >
-                <Ionicons
-                  name={showOldPass ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={colors.subtext}
-                />
-              </SoundTouchableOpacity>
-            </View>
-
-            {/* Input Kata Sandi Baru */}
-            <View
-              style={[
-                styles.passwordInputContainer,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.border,
-                  marginTop: 10,
-                },
-              ]}
-            >
-              <TextInput
-                style={[styles.inputFieldPassword, { color: colors.text }]}
-                placeholder={
-                  language === "id" ? "Kata Sandi Baru" : "New Password"
-                }
-                placeholderTextColor={colors.subtext}
-                secureTextEntry={!showNewPass}
-                value={newPassword}
-                onChangeText={setNewPassword}
-              />
-              <SoundTouchableOpacity
-                style={styles.eyeIconWrapper}
-                onPress={() => setShowNewPass(!showNewPass)}
-              >
-                <Ionicons
-                  name={showNewPass ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={colors.subtext}
-                />
-              </SoundTouchableOpacity>
-            </View>
-
-            {/* Input Konfirmasi Sandi Baru */}
-            <View
-              style={[
-                styles.passwordInputContainer,
-                { backgroundColor: colors.inputBg, borderColor: colors.border },
-              ]}
-            >
-              <TextInput
-                style={[styles.inputFieldPassword, { color: colors.text }]}
-                placeholder={
-                  language === "id"
-                    ? "Konfirmasi Sandi Baru"
-                    : "Confirm New Password"
-                }
-                placeholderTextColor={colors.subtext}
-                secureTextEntry={!showConfirmPass}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
-              <SoundTouchableOpacity
-                style={styles.eyeIconWrapper}
-                onPress={() => setShowConfirmPass(!showConfirmPass)}
-              >
-                <Ionicons
-                  name={showConfirmPass ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={colors.subtext}
-                />
-              </SoundTouchableOpacity>
-            </View>
-
-            <SoundTouchableOpacity
-              style={[styles.btnPrimary, submitting && { opacity: 0.7 }]}
-              onPress={handleSavePassword}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <ActivityIndicator color="#FFF" />
-              ) : (
-                <Text style={styles.btnPrimaryText}>{t("save_password")}</Text>
-              )}
-            </SoundTouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* ==================== MODAL: UBAH EMAIL ==================== */}
-      <Modal
-        visible={activeModal === "email"}
-        transparent
-        animationType="slide"
-      >
-        <View
-          style={[
-            styles.modalOverlay,
-            { backgroundColor: colors.modalOverlay },
-          ]}
-        >
-          <View style={[styles.modalCard, { backgroundColor: colors.card }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                {t("change_email")}
-              </Text>
-              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
-                <Ionicons name="close" size={24} color={colors.subtext} />
-              </SoundTouchableOpacity>
-            </View>
-            <TextInput
-              style={[
-                styles.inputField,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.border,
-                  color: colors.text,
-                },
-              ]}
-              placeholder={
-                language === "id" ? "Masukkan Email Baru" : "Enter New Email"
-              }
-              placeholderTextColor={colors.subtext}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={newEmail}
-              onChangeText={setNewEmail}
-            />
-            <SoundTouchableOpacity
-              style={[styles.btnPrimary, submitting && { opacity: 0.7 }]}
-              onPress={handleSaveEmail}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <ActivityIndicator color="#FFF" />
-              ) : (
-                <Text style={styles.btnPrimaryText}>{t("save_email")}</Text>
-              )}
-            </SoundTouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -1872,23 +1426,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     marginBottom: 12,
-  },
-  passwordInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  inputFieldPassword: {
-    flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-  },
-  eyeIconWrapper: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
   },
   btnPrimary: {
     backgroundColor: "#16A34A",
