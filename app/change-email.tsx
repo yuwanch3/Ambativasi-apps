@@ -14,8 +14,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 
 import API_URL, { apiFetch } from "../config";
 
@@ -54,11 +54,15 @@ export default function ChangeEmailScreen() {
   const [countdown, setCountdown] = useState(0);
   const [countdownEnd, setCountdownEnd] = useState(0);
   const timerRef = useRef<any>(null);
-  const [warning, setWarning] = useState<{ title: string; message: string } | null>(
-    null,
-  );
+  const [warning, setWarning] = useState<{
+    title: string;
+    message: string;
+  } | null>(null);
 
-  const replacePlaceholders = (template: string, values: Record<string, string>) => {
+  const replacePlaceholders = (
+    template: string,
+    values: Record<string, string>,
+  ) => {
     let out = template;
     for (const [key, val] of Object.entries(values)) {
       out = out.replace(new RegExp(`\\{${key}\\}`, "g"), val);
@@ -123,7 +127,9 @@ export default function ChangeEmailScreen() {
             setCode(draft.code || "");
             setNewEmail(draft.newEmail || "");
             if (draft.countdownEnd > Date.now()) {
-              const remaining = Math.ceil((draft.countdownEnd - Date.now()) / 1000);
+              const remaining = Math.ceil(
+                (draft.countdownEnd - Date.now()) / 1000,
+              );
               setCountdown(remaining);
               setCountdownEnd(draft.countdownEnd);
               runCountdownTick();
@@ -197,14 +203,11 @@ export default function ChangeEmailScreen() {
 
     setSending(true);
     try {
-      const response = await apiFetch(
-        `${API_URL}/send-verification-code.php`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: trimmed }),
-        },
-      );
+      const response = await apiFetch(`${API_URL}/send-verification-code.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmed }),
+      });
       const rawText = await response.text();
       let result;
       try {
@@ -452,19 +455,6 @@ export default function ChangeEmailScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* HEADER JUDUL */}
-        <View
-          style={[
-            styles.pageHeader,
-            { backgroundColor: colors.card, borderColor: colors.border },
-          ]}
-        >
-          <View style={styles.headerTextWrap}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>
-              {t("change_email_title")}
-            </Text>
-          </View>
-        </View>
-
         <View style={styles.body}>
           {/* KETERANGAN DI ATAS FORM */}
           <Text style={[styles.stepTitle, { color: colors.text }]}>
@@ -481,10 +471,17 @@ export default function ChangeEmailScreen() {
               <View
                 style={[
                   styles.inputWrap,
-                  { backgroundColor: colors.inputBg, borderColor: colors.border },
+                  {
+                    backgroundColor: colors.inputBg,
+                    borderColor: colors.border,
+                  },
                 ]}
               >
-                <Ionicons name="mail-outline" size={18} color={colors.subtext} />
+                <Ionicons
+                  name="mail-outline"
+                  size={18}
+                  color={colors.subtext}
+                />
                 <TextInput
                   style={[styles.inputField, { color: colors.text }]}
                   placeholder={t("current_email")}
@@ -528,10 +525,17 @@ export default function ChangeEmailScreen() {
               <View
                 style={[
                   styles.inputWrap,
-                  { backgroundColor: colors.inputBg, borderColor: colors.border },
+                  {
+                    backgroundColor: colors.inputBg,
+                    borderColor: colors.border,
+                  },
                 ]}
               >
-                <Ionicons name="keypad-outline" size={18} color={colors.subtext} />
+                <Ionicons
+                  name="keypad-outline"
+                  size={18}
+                  color={colors.subtext}
+                />
                 <TextInput
                   style={[styles.inputField, { color: colors.text }]}
                   placeholder={t("verification_code_placeholder")}
@@ -551,7 +555,9 @@ export default function ChangeEmailScreen() {
                 {verifying ? (
                   <ActivityIndicator color="#FFF" />
                 ) : (
-                  <Text style={styles.btnPrimaryText}>{t("verify_code_btn")}</Text>
+                  <Text style={styles.btnPrimaryText}>
+                    {t("verify_code_btn")}
+                  </Text>
                 )}
               </SoundTouchableOpacity>
 
@@ -585,10 +591,17 @@ export default function ChangeEmailScreen() {
               <View
                 style={[
                   styles.inputWrap,
-                  { backgroundColor: colors.inputBg, borderColor: colors.border },
+                  {
+                    backgroundColor: colors.inputBg,
+                    borderColor: colors.border,
+                  },
                 ]}
               >
-                <Ionicons name="mail-outline" size={18} color={colors.subtext} />
+                <Ionicons
+                  name="mail-outline"
+                  size={18}
+                  color={colors.subtext}
+                />
                 <TextInput
                   style={[styles.inputField, { color: colors.text }]}
                   placeholder={t("enter_new_email")}
@@ -608,7 +621,9 @@ export default function ChangeEmailScreen() {
                 {saving ? (
                   <ActivityIndicator color="#FFF" />
                 ) : (
-                  <Text style={styles.btnPrimaryText}>{t("save_new_email")}</Text>
+                  <Text style={styles.btnPrimaryText}>
+                    {t("save_new_email")}
+                  </Text>
                 )}
               </SoundTouchableOpacity>
             </View>
@@ -634,7 +649,10 @@ export default function ChangeEmailScreen() {
         onRequestClose={() => setWarning(null)}
       >
         <View
-          style={[styles.modalOverlay, { backgroundColor: colors.modalOverlay }]}
+          style={[
+            styles.modalOverlay,
+            { backgroundColor: colors.modalOverlay },
+          ]}
         >
           <View
             style={[
@@ -643,7 +661,9 @@ export default function ChangeEmailScreen() {
             ]}
           >
             <View style={styles.modalHeader}>
-              <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+              >
                 <Ionicons
                   name="warning-outline"
                   size={24}
@@ -691,7 +711,6 @@ const styles = StyleSheet.create({
   content: { flex: 1 },
   contentContainer: {
     flexGrow: 1,
-    justifyContent: "center",
     paddingBottom: 32,
   },
   pageHeader: {
@@ -710,9 +729,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   stepTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 16,
+    fontSize: 16,
+    fontWeight: "700",
+    marginTop: 20,
+    marginBottom: 20,
     textAlign: "center",
   },
   stepSub: {

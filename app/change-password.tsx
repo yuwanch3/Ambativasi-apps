@@ -14,8 +14,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 
 import API_URL, { apiFetch } from "../config";
 
@@ -50,9 +50,10 @@ export default function ChangePasswordScreen() {
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [warning, setWarning] = useState<{ title: string; message: string } | null>(
-    null,
-  );
+  const [warning, setWarning] = useState<{
+    title: string;
+    message: string;
+  } | null>(null);
 
   const showWarning = (title: string, message: string) => {
     setWarning({ title, message });
@@ -256,19 +257,6 @@ export default function ChangePasswordScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* HEADER JUDUL */}
-        <View
-          style={[
-            styles.pageHeader,
-            { backgroundColor: colors.card, borderColor: colors.border },
-          ]}
-        >
-          <View style={styles.headerTextWrap}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>
-              {t("change_password_title")}
-            </Text>
-          </View>
-        </View>
-
         <View style={styles.body}>
           {/* KETERANGAN DI ATAS FORM */}
           <Text style={[styles.stepTitle, { color: colors.text }]}>
@@ -282,7 +270,11 @@ export default function ChangePasswordScreen() {
               { backgroundColor: colors.inputBg, borderColor: colors.border },
             ]}
           >
-            <Ionicons name="lock-closed-outline" size={18} color={colors.subtext} />
+            <Ionicons
+              name="lock-closed-outline"
+              size={18}
+              color={colors.subtext}
+            />
             <TextInput
               style={[styles.inputField, { color: colors.text }]}
               placeholder={t("current_password")}
@@ -338,7 +330,11 @@ export default function ChangePasswordScreen() {
               { backgroundColor: colors.inputBg, borderColor: colors.border },
             ]}
           >
-            <Ionicons name="shield-checkmark-outline" size={18} color={colors.subtext} />
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={18}
+              color={colors.subtext}
+            />
             <TextInput
               style={[styles.inputField, { color: colors.text }]}
               placeholder={t("confirm_new_password")}
@@ -391,7 +387,10 @@ export default function ChangePasswordScreen() {
         onRequestClose={() => setWarning(null)}
       >
         <View
-          style={[styles.modalOverlay, { backgroundColor: colors.modalOverlay }]}
+          style={[
+            styles.modalOverlay,
+            { backgroundColor: colors.modalOverlay },
+          ]}
         >
           <View
             style={[
@@ -400,7 +399,9 @@ export default function ChangePasswordScreen() {
             ]}
           >
             <View style={styles.modalHeader}>
-              <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+              >
                 <Ionicons
                   name="warning-outline"
                   size={24}
@@ -448,7 +449,6 @@ const styles = StyleSheet.create({
   content: { flex: 1 },
   contentContainer: {
     flexGrow: 1,
-    justifyContent: "center",
     paddingBottom: 32,
   },
   pageHeader: {
@@ -466,9 +466,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   stepTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 16,
+    fontSize: 15,
+    fontWeight: "700",
+    marginTop: 20,
+    marginBottom: 20,
     textAlign: "center",
   },
   inputWrap: {

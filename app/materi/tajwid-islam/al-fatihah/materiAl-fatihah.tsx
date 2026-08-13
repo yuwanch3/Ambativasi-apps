@@ -14,19 +14,19 @@ import {
   Text,
   View,
 } from "react-native";
-import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SoundTouchableOpacity from "../../../../components/SoundTouchableOpacity";
 
 // 💡 IMPORT KOMPONEN MODULAR NAVBAR & SIDEBAR
 import { Navbar } from "../../../../components/navbar";
 import { Sidebar } from "../../../../components/sidebar";
 
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
+import API_URL, { apiFetch } from "../../../../config";
 import { useLanguage } from "../../../../context/LanguageContext";
 import { useTheme } from "../../../../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
-import API_URL, { apiFetch } from "../../../../config";
 
 export default function MateriScreen() {
   // --- TEMA & BAHASA GLOBAL REAL-TIME ---
@@ -67,13 +67,12 @@ export default function MateriScreen() {
 
         // 💡 AMBIL FOTO PROFIL
         try {
-          const responseProfile = await apiFetch(`${API_URL}/get-profile.php?email=${parsedSession.email}`,
+          const responseProfile = await apiFetch(
+            `${API_URL}/get-profile.php?email=${parsedSession.email}`,
           );
           const dataProfile = await responseProfile.json();
           if (dataProfile.status === "success" && dataProfile.profile_image) {
-            setProfileImage(
-              `${API_URL}/${dataProfile.profile_image}`,
-            );
+            setProfileImage(`${API_URL}/${dataProfile.profile_image}`);
           }
         } catch (e) {
           console.log("Avatar gagal dimuat di materi tajwid screen", e);
@@ -339,11 +338,6 @@ export default function MateriScreen() {
                             : "Open PDF Material (tajweed material)"}
                         </Text>
                       </View>
-                      <Ionicons
-                        name="chevron-forward"
-                        size={16}
-                        color={colors.subtext}
-                      />
                     </SoundTouchableOpacity>
 
                     <SoundTouchableOpacity
