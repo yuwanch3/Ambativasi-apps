@@ -86,8 +86,6 @@ export default function PengaturanScreen() {
   const [activeModal, setActiveModal] = useState<
     | "theme"
     | "language"
-    | "faq"
-    | "privacy"
     | "notification"
     | "clear_cache"
     | null
@@ -704,7 +702,7 @@ export default function PengaturanScreen() {
         >
           <SoundTouchableOpacity
             style={styles.rowItem}
-            onPress={() => setActiveModal("faq")}
+            onPress={() => router.push("/help-center")}
           >
             <View
               style={[
@@ -718,6 +716,11 @@ export default function PengaturanScreen() {
               <Text style={[styles.rowTitle, { color: colors.text }]}>
                 {t("faq")}
               </Text>
+              <Text style={[styles.rowSubtitle, { color: colors.subtext }]}>
+                {language === "id"
+                  ? "Pertanyaan umum & hubungi dukungan"
+                  : "FAQs & contact support"}
+              </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
           </SoundTouchableOpacity>
@@ -726,7 +729,7 @@ export default function PengaturanScreen() {
 
           <SoundTouchableOpacity
             style={styles.rowItem}
-            onPress={() => setActiveModal("privacy")}
+            onPress={() => router.push("/privacy-policy")}
           >
             <View
               style={[
@@ -747,6 +750,28 @@ export default function PengaturanScreen() {
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
           </SoundTouchableOpacity>
+
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+
+          <SoundTouchableOpacity
+            style={styles.rowItem}
+            onPress={() => router.push("/terms")}
+          >
+            <View
+              style={[
+                styles.iconWrapper,
+                { backgroundColor: colors.isDark ? "#4C1D95" : "#F5F3FF" },
+              ]}
+            >
+              <Ionicons name="document-text-outline" size={20} color="#7C3AED" />
+            </View>
+            <View style={styles.rowTextWrapper}>
+              <Text style={[styles.rowTitle, { color: colors.text }]}>
+                {language === "id" ? "Syarat & Ketentuan" : "Terms & Conditions"}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
+          </SoundTouchableOpacity>
         </View>
 
         {/* ==================== FOOTER VERSI ==================== */}
@@ -755,7 +780,7 @@ export default function PengaturanScreen() {
             Ambativasi App
           </Text>
           <Text style={[styles.versionNumber, { color: colors.subtext }]}>
-            Versi 1.0.6 (Build 2026)
+            Versi 1.0.7 (Build 2026)
           </Text>
         </View>
       </ScrollView>
@@ -1178,83 +1203,7 @@ export default function PengaturanScreen() {
       </Modal>
 
       {/* ==================== MODAL: FAQ ==================== */}
-      <Modal visible={activeModal === "faq"} transparent animationType="slide">
-        <View
-          style={[
-            styles.modalOverlay,
-            { backgroundColor: colors.modalOverlay },
-          ]}
-        >
-          <View
-            style={[
-              styles.modalCard,
-              { backgroundColor: colors.card, maxHeight: "80%" },
-            ]}
-          >
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                {t("faq")}
-              </Text>
-              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
-                <Ionicons name="close" size={24} color={colors.subtext} />
-              </SoundTouchableOpacity>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={[styles.faqQuestion, { color: colors.text }]}>
-                Q: Bagaimana soal AI digenerate?
-              </Text>
-              <Text style={[styles.faqAnswer, { color: colors.subtext }]}>
-                A: Soal diracik secara otomatis berbasis kecerdasan buatan
-                Gemini API sesuai dengan materi bab yang dipilih.
-              </Text>
-              <Text style={[styles.faqQuestion, { color: colors.text }]}>
-                Q: Apakah riwayat kuis tersimpan?
-              </Text>
-              <Text style={[styles.faqAnswer, { color: colors.subtext }]}>
-                A: Ya, skor dan review jawaban tersimpan otomatis di sistem
-                aplikasi.
-              </Text>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-
       {/* ==================== MODAL: PRIVASI ==================== */}
-      <Modal
-        visible={activeModal === "privacy"}
-        transparent
-        animationType="slide"
-      >
-        <View
-          style={[
-            styles.modalOverlay,
-            { backgroundColor: colors.modalOverlay },
-          ]}
-        >
-          <View
-            style={[
-              styles.modalCard,
-              { backgroundColor: colors.card, maxHeight: "80%" },
-            ]}
-          >
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                {t("privacy_policy")}
-              </Text>
-              <SoundTouchableOpacity onPress={() => setActiveModal(null)}>
-                <Ionicons name="close" size={24} color={colors.subtext} />
-              </SoundTouchableOpacity>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={[styles.faqAnswer, { color: colors.subtext }]}>
-                Aplikasi Ambativasi menghargai privasi pengguna. Data email dan
-                username kamu tersimpan dengan aman dan hanya digunakan untuk
-                keperluan sinkronisasi akun serta hasil belajar.
-              </Text>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }
@@ -1465,16 +1414,5 @@ const styles = StyleSheet.create({
   selectOptionText: {
     fontSize: 15,
     fontWeight: "600",
-  },
-  faqQuestion: {
-    fontSize: 15,
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-  faqAnswer: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 4,
-    marginBottom: 10,
   },
 });

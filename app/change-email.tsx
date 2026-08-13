@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Modal,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -28,6 +29,7 @@ import { useTheme } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
 const CODE_COOLDOWN_SECONDS = 60;
+const DRAFT_KEY = "changeEmailDraft";
 
 export default function ChangeEmailScreen() {
   const { colors } = useTheme();
@@ -50,7 +52,11 @@ export default function ChangeEmailScreen() {
   const [verifying, setVerifying] = useState(false);
   const [saving, setSaving] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const [countdownEnd, setCountdownEnd] = useState(0);
   const timerRef = useRef<any>(null);
+  const [warning, setWarning] = useState<{ title: string; message: string } | null>(
+    null,
+  );
 
   const replacePlaceholders = (template: string, values: Record<string, string>) => {
     let out = template;
@@ -60,9 +66,12 @@ export default function ChangeEmailScreen() {
     return out;
   };
 
-  const startCountdown = () => {
+  const showWarning = (title: string, message: string) => {
+    setWarning({ title, message });
+  };
+
+  const runCountdownTick = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    setCountdown(CODE_COOLDOWN_SECONDS);
     timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -73,6 +82,23 @@ export default function ChangeEmailScreen() {
       });
     }, 1000);
   };
+
+  const startCountdown = (seconds: number = CODE_COOLDOWN_SECONDS) => {
+    setCountdown(seconds);
+    setCountdownEnd(Date.now() + seconds * 1000);
+    runCountdownTick();
+  };
+
+  useEffect(() => {
+    const draft = { stage, currentEmail, code, newEmail, countdownEnd };
+    AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft)).catch(() => {});
+  }, [stage, currentEmail, code, newEmail, countdownEnd]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
 
   const checkSession = async () => {
     try {
@@ -86,7 +112,29 @@ export default function ChangeEmailScreen() {
         username: parsedSession.username || "User",
         email: parsedSession.email || "",
       });
-      setCurrentEmail(parsedSession.email || "");
+
+      const draftRaw = await AsyncStorage.getItem(DRAFT_KEY);
+      if (draftRaw) {
+        try {
+          const draft = JSON.parse(draftRaw);
+          if (draft) {
+            setStage(draft.stage || "email");
+            setCurrentEmail(draft.currentEmail || parsedSession.email || "");
+            setCode(draft.code || "");
+            setNewEmail(draft.newEmail || "");
+            if (draft.countdownEnd > Date.now()) {
+              const remaining = Math.ceil((draft.countdownEnd - Date.now()) / 1000);
+              setCountdown(remaining);
+              setCountdownEnd(draft.countdownEnd);
+              runCountdownTick();
+            }
+          }
+        } catch (e) {
+          console.log("Gagal membaca draft", e);
+        }
+      } else {
+        setCurrentEmail(parsedSession.email || "");
+      }
 
       try {
         const response = await apiFetch(
@@ -125,6 +173,7 @@ export default function ChangeEmailScreen() {
 
   const handleLogout = async () => {
     try {
+      await AsyncStorage.removeItem(DRAFT_KEY);
       await AsyncStorage.removeItem("userSession");
       router.replace("../auth/login");
     } catch (error) {
@@ -137,16 +186,12 @@ export default function ChangeEmailScreen() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!trimmed || !emailRegex.test(trimmed)) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Masukkan alamat email terdaftar yang valid!"
-            : "Please enter a valid registered email!",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        language === "id"
+          ? "Masukkan alamat email terdaftar yang valid!"
+          : "Please enter a valid registered email!",
+      );
       return;
     }
 
@@ -165,16 +210,12 @@ export default function ChangeEmailScreen() {
       try {
         result = JSON.parse(rawText);
       } catch {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Error Server" : "Server Error",
-          text2:
-            language === "id"
-              ? "Respon dari server tidak valid!"
-              : "Invalid server response!",
-          position: "top",
-          visibilityTime: 2500,
-        });
+        showWarning(
+          language === "id" ? "Error Server" : "Server Error",
+          language === "id"
+            ? "Respon dari server tidak valid!"
+            : "Invalid server response!",
+        );
         return;
       }
 
@@ -191,30 +232,22 @@ export default function ChangeEmailScreen() {
           visibilityTime: 3000,
         });
       } else {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Gagal" : "Failed",
-          text2:
-            result.message ||
+        showWarning(
+          language === "id" ? "Gagal" : "Failed",
+          result.message ||
             (language === "id"
               ? "Email tidak terdaftar!"
               : "Email is not registered!"),
-          position: "top",
-          visibilityTime: 2500,
-        });
+        );
       }
     } catch (error) {
       console.log("Error kirim kode:", error);
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Error Koneksi" : "Connection Error",
-        text2:
-          language === "id"
-            ? "Gagal mengirim kode verifikasi."
-            : "Failed to send verification code.",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Error Koneksi" : "Connection Error",
+        language === "id"
+          ? "Gagal mengirim kode verifikasi."
+          : "Failed to send verification code.",
+      );
     } finally {
       setSending(false);
     }
@@ -222,13 +255,10 @@ export default function ChangeEmailScreen() {
 
   const handleVerifyCode = async () => {
     if (!code.trim()) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2: t("enter_code_first"),
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        t("enter_code_first"),
+      );
       return;
     }
 
@@ -244,16 +274,12 @@ export default function ChangeEmailScreen() {
       try {
         result = JSON.parse(rawText);
       } catch {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Error Server" : "Server Error",
-          text2:
-            language === "id"
-              ? "Respon dari server tidak valid!"
-              : "Invalid server response!",
-          position: "top",
-          visibilityTime: 2500,
-        });
+        showWarning(
+          language === "id" ? "Error Server" : "Server Error",
+          language === "id"
+            ? "Respon dari server tidak valid!"
+            : "Invalid server response!",
+        );
         return;
       }
 
@@ -267,30 +293,22 @@ export default function ChangeEmailScreen() {
           visibilityTime: 2500,
         });
       } else {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Kode Salah" : "Wrong Code",
-          text2:
-            result.message ||
+        showWarning(
+          language === "id" ? "Kode Salah" : "Wrong Code",
+          result.message ||
             (language === "id"
               ? "Kode verifikasi tidak valid atau sudah kedaluwarsa."
               : "Invalid or expired verification code."),
-          position: "top",
-          visibilityTime: 2500,
-        });
+        );
       }
     } catch (error) {
       console.log("Error verifikasi kode:", error);
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Error Koneksi" : "Connection Error",
-        text2:
-          language === "id"
-            ? "Gagal memverifikasi kode."
-            : "Failed to verify code.",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Error Koneksi" : "Connection Error",
+        language === "id"
+          ? "Gagal memverifikasi kode."
+          : "Failed to verify code.",
+      );
     } finally {
       setVerifying(false);
     }
@@ -301,27 +319,20 @@ export default function ChangeEmailScreen() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Masukkan alamat email baru yang valid!"
-            : "Please enter a valid new email address!",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        language === "id"
+          ? "Masukkan alamat email baru yang valid!"
+          : "Please enter a valid new email address!",
+      );
       return;
     }
 
     if (trimmedEmail === currentEmail) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2: t("email_must_differ"),
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        t("email_must_differ"),
+      );
       return;
     }
 
@@ -340,16 +351,12 @@ export default function ChangeEmailScreen() {
       try {
         result = JSON.parse(rawText);
       } catch {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Error Server" : "Server Error",
-          text2:
-            language === "id"
-              ? "Respon dari server tidak valid!"
-              : "Invalid server response!",
-          position: "top",
-          visibilityTime: 2500,
-        });
+        showWarning(
+          language === "id" ? "Error Server" : "Server Error",
+          language === "id"
+            ? "Respon dari server tidak valid!"
+            : "Invalid server response!",
+        );
         return;
       }
 
@@ -360,6 +367,7 @@ export default function ChangeEmailScreen() {
           : {};
         sessionData.email = trimmedEmail;
         await AsyncStorage.setItem("userSession", JSON.stringify(sessionData));
+        await AsyncStorage.removeItem(DRAFT_KEY);
 
         setUserData({
           username: userData?.username || "User",
@@ -381,30 +389,22 @@ export default function ChangeEmailScreen() {
           router.back();
         }, 1500);
       } else {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Gagal" : "Failed",
-          text2:
-            result.message ||
+        showWarning(
+          language === "id" ? "Gagal" : "Failed",
+          result.message ||
             (language === "id"
               ? "Gagal memperbarui email."
               : "Failed to update email."),
-          position: "top",
-          visibilityTime: 2500,
-        });
+        );
       }
     } catch (error) {
       console.log("Error update email:", error);
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Error Koneksi" : "Connection Error",
-        text2:
-          language === "id"
-            ? "Gagal memperbarui email."
-            : "Failed to update email.",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Error Koneksi" : "Connection Error",
+        language === "id"
+          ? "Gagal memperbarui email."
+          : "Failed to update email.",
+      );
     } finally {
       setSaving(false);
     }
@@ -451,35 +451,30 @@ export default function ChangeEmailScreen() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* HEADER + TOMBOL KEMBALI */}
+        {/* HEADER JUDUL */}
         <View
           style={[
             styles.pageHeader,
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <SoundTouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
-            <Ionicons name="chevron-back" size={24} color={colors.text} />
-          </SoundTouchableOpacity>
           <View style={styles.headerTextWrap}>
             <Text style={[styles.headerTitle, { color: colors.text }]}>
               {t("change_email_title")}
             </Text>
-            <Text style={[styles.headerSub, { color: colors.subtext }]}>
-              {t("change_email_subtitle")}
-            </Text>
           </View>
-          <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.body}>
+          {/* KETERANGAN DI ATAS FORM */}
+          <Text style={[styles.stepTitle, { color: colors.text }]}>
+            {t("change_email_subtitle")}
+          </Text>
+
           {/* LANGKAH 1: MASUKKAN EMAIL LAMA */}
           {stage === "email" && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>
+              <Text style={[styles.stepSub, { color: colors.subtext }]}>
                 {language === "id" ? "Langkah 1" : "Step 1"} —{" "}
                 {t("current_email")}
               </Text>
@@ -526,7 +521,7 @@ export default function ChangeEmailScreen() {
           {/* LANGKAH 2: MASUKKAN KODE VERIFIKASI */}
           {stage === "code" && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>
+              <Text style={[styles.stepSub, { color: colors.subtext }]}>
                 {language === "id" ? "Langkah 2" : "Step 2"} —{" "}
                 {t("verification_code")}
               </Text>
@@ -583,7 +578,7 @@ export default function ChangeEmailScreen() {
           {/* LANGKAH 3: EMAIL BARU */}
           {stage === "new_email" && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>
+              <Text style={[styles.stepSub, { color: colors.subtext }]}>
                 {language === "id" ? "Langkah 3" : "Step 3"} —{" "}
                 {t("enter_new_email")}
               </Text>
@@ -630,6 +625,58 @@ export default function ChangeEmailScreen() {
         profileImage={profileImage}
         onLogout={handleLogout}
       />
+
+      {/* MODAL WARNING */}
+      <Modal
+        visible={warning !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setWarning(null)}
+      >
+        <View
+          style={[styles.modalOverlay, { backgroundColor: colors.modalOverlay }]}
+        >
+          <View
+            style={[
+              styles.modalCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <View style={styles.modalHeader}>
+              <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+                <Ionicons
+                  name="warning-outline"
+                  size={24}
+                  color="#F59E0B"
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  {warning?.title ||
+                    (language === "id" ? "Perhatian" : "Warning")}
+                </Text>
+              </View>
+              <SoundTouchableOpacity onPress={() => setWarning(null)}>
+                <Ionicons name="close" size={22} color={colors.subtext} />
+              </SoundTouchableOpacity>
+            </View>
+
+            <Text style={[styles.modalMessage, { color: colors.subtext }]}>
+              {warning?.message}
+            </Text>
+
+            <View style={styles.modalActions}>
+              <SoundTouchableOpacity
+                style={[styles.btnModalConfirm, { backgroundColor: "#2563EB" }]}
+                onPress={() => setWarning(null)}
+              >
+                <Text style={styles.btnModalConfirmText}>
+                  {language === "id" ? "Oke" : "OK"}
+                </Text>
+              </SoundTouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -642,24 +689,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   content: { flex: 1 },
-  contentContainer: { paddingBottom: 32 },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingBottom: 32,
+  },
   pageHeader: {
-    flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
   },
-  backBtn: { padding: 6, width: 40 },
-  headerTextWrap: { flex: 1, alignItems: "center" },
+  headerTextWrap: { alignItems: "center" },
   headerTitle: { fontSize: 17, fontWeight: "bold", textAlign: "center" },
   headerSub: { fontSize: 12, textAlign: "center", marginTop: 2 },
-  headerSpacer: { width: 40 },
-  body: { padding: 20 },
+  body: {
+    padding: 20,
+    width: "100%",
+    maxWidth: 420,
+    alignSelf: "center",
+  },
   stepTitle: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  stepSub: {
+    fontSize: 13,
+    fontWeight: "600",
     marginBottom: 12,
+    textAlign: "center",
   },
   inputWrap: {
     flexDirection: "row",
@@ -701,5 +761,53 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 14,
     textAlign: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 380,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+  modalMessage: {
+    fontSize: 14,
+    lineHeight: 22,
+    marginVertical: 10,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 18,
+  },
+  btnModalConfirm: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+  },
+  btnModalConfirmText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });

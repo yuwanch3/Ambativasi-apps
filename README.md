@@ -101,7 +101,17 @@ src/
 
 ## 📋 Changelog
 
-### v1.0.6 (terbaru)
+### v1.0.7 (terbaru)
+
+- 🆘 **Halaman Pusat Bantuan / FAQ baru**: daftar pertanyaan umum yang relevan dengan aplikasi (cara belajar, latihan soal, fitur AI, tilawah, ubah email/kata sandi, dsb). Ketuk pertanyaan untuk melihat jawabannya, plus kartu **"Ajukan Pertanyaan"** untuk menghubungi tim dukungan via email `ambativasi2829@gmail.com`.
+- 🛡️ **Halaman Kebijakan Privasi baru**: dokumen resmi 11 pasal (pengumpulan data, keamanan, kode verifikasi, pihak ketiga, layanan AI, hak pengguna, kontak) yang relevan dengan sistem Ambativasi.
+- 📜 **Halaman Syarat & Ketentuan baru**: dokumen resmi 11 pasal (akun, penggunaan yang diizinkan, kekayaan intelektual, batasan tanggung jawab, dll).
+- 🎨 **Semua halaman baru mendukung tema gelap/terang dan multi-bahasa (Indonesia/English)**, lengkap dengan Navbar dan Sidebar — tombol kembali memakai bawaan sistem HP.
+- ⚙️ **Menu Pengaturan diperbarui**: "Pusat Bantuan / FAQ" dan "Kebijakan Privasi" kini membuka halaman penuh, serta menu baru **"Syarat & Ketentuan"**. Modal FAQ & privasi lama dihapus.
+- 🧭 **Halaman Ubah Email & Kata Sandi dirapikan**: layout konten di tengah layar, keterangan di atas form, tanpa tombol kembali custom, plus **modal peringatan** di tiap langkah (bukan toast).
+- 💾 **Progress ubah email tersimpan sementara**: bila pengguna kembali di tengah alur (email lama → kode verifikasi → email baru), saat membuka lagi lanjut dari tahap terakhir — tidak perlu mengulang dari awal.
+
+### v1.0.6
 
 - 👤 **Ubah Email & Kata Sandi di halaman terpisah**: menu "Ubah Email" dan "Ubah Kata Sandi" di Pengaturan kini membuka halaman khusus (bukan modal) lengkap dengan Navbar, Sidebar, tema gelap/terang, dan multi-bahasa.
 - 🔑 **Verifikasi identitas saat ubah email**: pengguna memasukkan email terdaftar, lalu sistem mengirim **kode verifikasi 6 digit** ke email tersebut (berlaku 5 menit, sekali pakai) sebagai konfirmasi sebelum email diganti.

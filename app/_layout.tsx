@@ -117,6 +117,17 @@ function RootLayoutNav() {
             options={{ headerShown: false }}
           />
 
+          {/* Halaman Bantuan & Legalitas */}
+          <Stack.Screen
+            name="help-center"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="privacy-policy"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="terms" options={{ headerShown: false }} />
+
           {/* Halaman Tilawah */}
 
           {/* Halaman Ujian */}

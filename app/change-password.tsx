@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Modal,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -49,6 +50,13 @@ export default function ChangePasswordScreen() {
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [warning, setWarning] = useState<{ title: string; message: string } | null>(
+    null,
+  );
+
+  const showWarning = (title: string, message: string) => {
+    setWarning({ title, message });
+  };
 
   const checkSession = async () => {
     try {
@@ -109,49 +117,36 @@ export default function ChangePasswordScreen() {
 
   const handleSavePassword = async () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2:
-          language === "id"
-            ? "Lengkapi semua kolom kata sandi!"
-            : "Please fill in all password fields!",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        language === "id"
+          ? "Lengkapi semua kolom kata sandi!"
+          : "Please fill in all password fields!",
+      );
       return;
     }
 
     if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2: t("password_min_length"),
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        t("password_min_length"),
+      );
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2: t("password_not_match"),
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        t("password_not_match"),
+      );
       return;
     }
 
     if (oldPassword === newPassword) {
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Perhatian" : "Warning",
-        text2: t("password_same_as_old"),
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Perhatian" : "Warning",
+        t("password_same_as_old"),
+      );
       return;
     }
 
@@ -173,16 +168,12 @@ export default function ChangePasswordScreen() {
       try {
         result = JSON.parse(rawText);
       } catch {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Error Server" : "Server Error",
-          text2:
-            language === "id"
-              ? "Respon dari server tidak valid!"
-              : "Invalid server response!",
-          position: "top",
-          visibilityTime: 2500,
-        });
+        showWarning(
+          language === "id" ? "Error Server" : "Server Error",
+          language === "id"
+            ? "Respon dari server tidak valid!"
+            : "Invalid server response!",
+        );
         return;
       }
 
@@ -202,30 +193,22 @@ export default function ChangePasswordScreen() {
           router.back();
         }, 1500);
       } else {
-        Toast.show({
-          type: "error",
-          text1: language === "id" ? "Gagal" : "Failed",
-          text2:
-            result.message ||
+        showWarning(
+          language === "id" ? "Gagal" : "Failed",
+          result.message ||
             (language === "id"
               ? "Kata sandi lama tidak sesuai!"
               : "Incorrect old password!"),
-          position: "top",
-          visibilityTime: 2500,
-        });
+        );
       }
     } catch (error) {
       console.log("Error update password:", error);
-      Toast.show({
-        type: "error",
-        text1: language === "id" ? "Error Koneksi" : "Connection Error",
-        text2:
-          language === "id"
-            ? "Gagal memperbarui kata sandi."
-            : "Failed to update password.",
-        position: "top",
-        visibilityTime: 2500,
-      });
+      showWarning(
+        language === "id" ? "Error Koneksi" : "Connection Error",
+        language === "id"
+          ? "Gagal memperbarui kata sandi."
+          : "Failed to update password.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -272,31 +255,26 @@ export default function ChangePasswordScreen() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* HEADER + TOMBOL KEMBALI */}
+        {/* HEADER JUDUL */}
         <View
           style={[
             styles.pageHeader,
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <SoundTouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
-            <Ionicons name="chevron-back" size={24} color={colors.text} />
-          </SoundTouchableOpacity>
           <View style={styles.headerTextWrap}>
             <Text style={[styles.headerTitle, { color: colors.text }]}>
               {t("change_password_title")}
             </Text>
-            <Text style={[styles.headerSub, { color: colors.subtext }]}>
-              {t("change_password_subtitle")}
-            </Text>
           </View>
-          <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.body}>
+          {/* KETERANGAN DI ATAS FORM */}
+          <Text style={[styles.stepTitle, { color: colors.text }]}>
+            {t("change_password_subtitle")}
+          </Text>
+
           {/* INPUT KATA SANDI LAMA */}
           <View
             style={[
@@ -404,6 +382,58 @@ export default function ChangePasswordScreen() {
         profileImage={profileImage}
         onLogout={handleLogout}
       />
+
+      {/* MODAL WARNING */}
+      <Modal
+        visible={warning !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setWarning(null)}
+      >
+        <View
+          style={[styles.modalOverlay, { backgroundColor: colors.modalOverlay }]}
+        >
+          <View
+            style={[
+              styles.modalCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <View style={styles.modalHeader}>
+              <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+                <Ionicons
+                  name="warning-outline"
+                  size={24}
+                  color="#F59E0B"
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  {warning?.title ||
+                    (language === "id" ? "Perhatian" : "Warning")}
+                </Text>
+              </View>
+              <SoundTouchableOpacity onPress={() => setWarning(null)}>
+                <Ionicons name="close" size={22} color={colors.subtext} />
+              </SoundTouchableOpacity>
+            </View>
+
+            <Text style={[styles.modalMessage, { color: colors.subtext }]}>
+              {warning?.message}
+            </Text>
+
+            <View style={styles.modalActions}>
+              <SoundTouchableOpacity
+                style={[styles.btnModalConfirm, { backgroundColor: "#2563EB" }]}
+                onPress={() => setWarning(null)}
+              >
+                <Text style={styles.btnModalConfirmText}>
+                  {language === "id" ? "Oke" : "OK"}
+                </Text>
+              </SoundTouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -416,20 +446,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   content: { flex: 1 },
-  contentContainer: { paddingBottom: 32 },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingBottom: 32,
+  },
   pageHeader: {
-    flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
   },
-  backBtn: { padding: 6, width: 40 },
-  headerTextWrap: { flex: 1, alignItems: "center" },
+  headerTextWrap: { alignItems: "center" },
   headerTitle: { fontSize: 17, fontWeight: "bold", textAlign: "center" },
-  headerSub: { fontSize: 12, textAlign: "center", marginTop: 2 },
-  headerSpacer: { width: 40 },
-  body: { padding: 20 },
+  body: {
+    padding: 20,
+    width: "100%",
+    maxWidth: 420,
+    alignSelf: "center",
+  },
+  stepTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 16,
+    textAlign: "center",
+  },
   inputWrap: {
     flexDirection: "row",
     alignItems: "center",
@@ -457,5 +498,53 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 15,
     fontWeight: "bold",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 380,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+  modalMessage: {
+    fontSize: 14,
+    lineHeight: 22,
+    marginVertical: 10,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 18,
+  },
+  btnModalConfirm: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+  },
+  btnModalConfirmText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
