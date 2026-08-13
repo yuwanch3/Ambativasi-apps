@@ -2,7 +2,7 @@ import API_URL, { apiFetch } from "../../config";
 
 export interface SoalAI {
   no: number;
-  tipe_soal: "standar" | "full" | "drag_drop" | "fill_blank";
+  tipe_soal: "standar" | "multiple_choice" | "drag_drop" | "fill_blank";
   pertanyaan: string;
   pilihan?: {
     A: string;

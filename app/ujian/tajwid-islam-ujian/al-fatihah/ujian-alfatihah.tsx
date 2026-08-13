@@ -35,7 +35,7 @@ const { width } = Dimensions.get("window");
 
 interface SoalAI {
   no: number;
-  tipe_soal: "standar" | "full" | "drag_drop" | "fill_blank";
+  tipe_soal: "standar" | "multiple_choice" | "drag_drop" | "fill_blank";
   pertanyaan: string;
   pilihan?: {
     A: string;
@@ -168,7 +168,7 @@ export default function SubUjianTajwid() {
   const [listSoal, setListSoal] = useState<SoalAI[]>([]);
   const [loadingAI, setLoadingAI] = useState(true);
   const [indeksAktif, setIndeksAktif] = useState(0);
-  const [jawabanUser, setJawabanUser] = useState<Record<number, string>>({});
+  const [jawabanUser, setJawabanUser] = useState<Record<number, string | string[]>>({});
   const [shuffledOptions, setShuffledOptions] = useState<[string, string][]>([]);
 
   // --- REF PENAHAN LAYOUT DROP ZONE ---
@@ -318,6 +318,24 @@ export default function SubUjianTajwid() {
   // 🔒 CEK READ-ONLY SEBELUM UBAH JAWABAN
   const pilihJawaban = (nilai: string) => {
     if (isReadOnlyState) return;
+    const tipeSoalAktif = listSoal[indeksAktif]?.tipe_soal;
+    if (tipeSoalAktif === "multiple_choice") {
+      const jawabanSaatIni = jawabanUser[indeksAktif];
+      const arraySaatIni = Array.isArray(jawabanSaatIni) ? jawabanSaatIni : [];
+      if (arraySaatIni.includes(nilai)) {
+        const hasilFilter = arraySaatIni.filter((x) => x !== nilai);
+        if (hasilFilter.length === 0) {
+          const dataBaru = { ...jawabanUser };
+          delete dataBaru[indeksAktif];
+          setJawabanUser(dataBaru);
+        } else {
+          setJawabanUser({ ...jawabanUser, [indeksAktif]: hasilFilter });
+        }
+      } else {
+        setJawabanUser({ ...jawabanUser, [indeksAktif]: [...arraySaatIni, nilai] });
+      }
+      return;
+    }
     setJawabanUser({ ...jawabanUser, [indeksAktif]: nilai });
   };
 
@@ -406,8 +424,7 @@ export default function SubUjianTajwid() {
   const userHasPicked = jawabanUser[indeksAktif];
 
   // 💡 SELALU AKTIFKAN ARABIC / RTL UNTUK SOAL TAJWID MATERI FULL ARAB
-  const isMateriTajwid = true;
-  const wajibRTL = jenisTipe === "full" && isMateriTajwid;
+  const wajibRTL = false;
 
   const renderTeksDragDrop = (fullText: string) => {
     if (!fullText.includes("___")) return <Text style={[styles.teksPertanyaan, { color: colors.text }]}>{fullText}</Text>;
@@ -429,7 +446,7 @@ export default function SubUjianTajwid() {
         >
           <Text style={[styles.dropZoneText, userHasPicked && { color: '#FFF' }]}>
             {userHasPicked && soalSaatIni?.pilihan 
-              ? soalSaatIni.pilihan[userHasPicked as keyof typeof soalSaatIni.pilihan] 
+              ? soalSaatIni.pilihan[(userHasPicked as string) as keyof typeof soalSaatIni.pilihan] 
               : (language === "id" ? " Tarik Ke Sini " : " Drag Here ")}
           </Text>
         </SoundTouchableOpacity>
@@ -454,7 +471,7 @@ export default function SubUjianTajwid() {
           autoCapitalize="none"
           autoCorrect={false}
           editable={!isReadOnlyState}
-          value={userHasPicked || ""}
+          value={typeof userHasPicked === "string" ? userHasPicked : ""}
           onChangeText={(teks) => pilihJawaban(teks)}
         />
         <Text style={[styles.teksPertanyaan, { color: colors.text }]}>{bagian[1]}</Text>
@@ -537,7 +554,7 @@ export default function SubUjianTajwid() {
                 styles.badgeTipeSoal,
                 jenisTipe === "drag_drop"
                   ? { backgroundColor: colors.isDark ? "#064E3B" : "#DCFCE7" }
-                  : jenisTipe === "full"
+                  : jenisTipe === "multiple_choice"
                   ? { backgroundColor: colors.isDark ? "#1E3A8A" : "#DBEAFE" }
                   : jenisTipe === "fill_blank"
                   ? { backgroundColor: colors.isDark ? "#451A1A" : "#FEE2E2" }
@@ -549,7 +566,7 @@ export default function SubUjianTajwid() {
                   styles.txtTipeBadge,
                   jenisTipe === "drag_drop"
                     ? { color: colors.isDark ? "#4ADE80" : "#166534" }
-                    : jenisTipe === "full"
+                    : jenisTipe === "multiple_choice"
                     ? { color: colors.isDark ? "#93C5FD" : "#1E40AF" }
                     : jenisTipe === "fill_blank"
                     ? { color: colors.isDark ? "#F87171" : "#991B1B" }
@@ -615,8 +632,38 @@ export default function SubUjianTajwid() {
           </View>
         ) : (
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            {jenisTipe === "multiple_choice" && (
+              <View
+                style={[
+                  styles.fillBlankHintBox,
+                  {
+                    backgroundColor: colors.isDark ? "#1E3A8A" : "#EFF6FF",
+                    borderColor: colors.isDark ? "#2563EB" : "#BFDBFE",
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="checkbox-outline"
+                  size={20}
+                  color="#2563EB"
+                  style={{ marginRight: 8 }}
+                />
+                <Text
+                  style={[
+                    styles.fillBlankHintText,
+                    { color: colors.isDark ? "#93C5FD" : "#1E40AF" },
+                  ]}
+                >
+                  {language === "id"
+                    ? "Pilih 2-3 jawaban yang benar dari opsi di bawah."
+                    : "Select 2-3 correct answers from the options below."}
+                </Text>
+              </View>
+            )}
             {soalSaatIni && soalSaatIni.pilihan && Object.entries(soalSaatIni.pilihan).map(([abjad, teksOpsi]) => {
-              const isSelected = userHasPicked === abjad;
+              const isSelected = Array.isArray(userHasPicked)
+                ? userHasPicked.includes(abjad)
+                : userHasPicked === abjad;
               return (
                 <SoundTouchableOpacity
                   key={abjad}

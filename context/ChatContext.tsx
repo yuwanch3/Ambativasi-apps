@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ChatMessage, chatWithGemini } from "../src/service/chatService";
 
 interface ChatContextType {
@@ -20,32 +20,98 @@ const ChatContext = createContext<ChatContextType>({
   setContext: () => {},
 });
 
-const STORAGE_KEY = "chat_history";
+const STORAGE_PREFIX = "chat_history_";
+const GLOBAL_KEY = "chat_history";
+
+// 💡 Ambil identitas akun aktif (user.id paling stabil; fallback email/username).
+const getAccountId = async (): Promise<string | null> => {
+  try {
+    const session = await AsyncStorage.getItem("userSession");
+    if (!session) return null;
+    const parsed = JSON.parse(session);
+    const id =
+      parsed?.id != null
+        ? String(parsed.id)
+        : parsed?.user_id != null
+          ? String(parsed.user_id)
+          : parsed?.email
+            ? String(parsed.email).toLowerCase().trim()
+            : null;
+    return id;
+  } catch {
+    return null;
+  }
+};
+
+// 💡 Migrasi history global lama → key per akun (sekali saja).
+const migrateGlobalHistory = async (accountId: string) => {
+  try {
+    const globalRaw = await AsyncStorage.getItem(GLOBAL_KEY);
+    if (!globalRaw) return;
+    const perAccount = await AsyncStorage.getItem(`${STORAGE_PREFIX}${accountId}`);
+    if (!perAccount) {
+      await AsyncStorage.setItem(`${STORAGE_PREFIX}${accountId}`, globalRaw);
+    }
+    await AsyncStorage.removeItem(GLOBAL_KEY);
+  } catch {}
+};
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentSubject, setCurrentSubject] = useState<string | undefined>();
   const [currentTopic, setCurrentTopic] = useState<string | undefined>();
+  const activeAccountRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    loadHistory();
-  }, []);
+  const storageKeyFor = (accountId: string) => `${STORAGE_PREFIX}${accountId}`;
 
   const loadHistory = async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setMessages(JSON.parse(stored));
+      const accountId = await getAccountId();
+      if (accountId) {
+        await migrateGlobalHistory(accountId);
       }
-    } catch {}
+      activeAccountRef.current = accountId;
+      if (!accountId) {
+        setMessages([]);
+        return;
+      }
+      const stored = await AsyncStorage.getItem(storageKeyFor(accountId));
+      setMessages(stored ? JSON.parse(stored) : []);
+    } catch {
+      setMessages([]);
+    }
   };
 
   const saveHistory = async (msgs: ChatMessage[]) => {
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+      const accountId = activeAccountRef.current ?? (await getAccountId());
+      if (accountId) {
+        await AsyncStorage.setItem(storageKeyFor(accountId), JSON.stringify(msgs));
+      }
     } catch {}
   };
+
+  // 💡 Muat ulang history setiap kali akun berubah (login/logout/ganti akun).
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const accountId = await getAccountId();
+      if (accountId !== activeAccountRef.current) {
+        activeAccountRef.current = accountId;
+        if (!accountId) {
+          setMessages([]);
+          return;
+        }
+        const stored = await AsyncStorage.getItem(storageKeyFor(accountId));
+        setMessages(stored ? JSON.parse(stored) : []);
+      }
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
 
   const sendMessage = useCallback(
     async (content: string, context?: { subject?: string; topic?: string }) => {
@@ -81,7 +147,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearHistory = async () => {
     setMessages([]);
-    await AsyncStorage.removeItem(STORAGE_KEY);
+    try {
+      const accountId = activeAccountRef.current ?? (await getAccountId());
+      if (accountId) {
+        await AsyncStorage.removeItem(storageKeyFor(accountId));
+      }
+    } catch {}
   };
 
   const setContext = (subject?: string, topic?: string) => {

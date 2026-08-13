@@ -101,7 +101,14 @@ src/
 
 ## 📋 Changelog
 
-### v1.0.7 (terbaru)
+### v1.0.8 (terbaru)
+
+- 🧠 **Tipe soal AI baru: Multiple Choice**: menggantikan tipe "Full" di seluruh materi & ujian (Bahasa Jepang, Tajwid, Petrofisika, Chemical EOR). Setiap soal multiple choice memiliki **2–3 jawaban benar** dari 4 opsi A/B/C/D — pengguna mengetuk beberapa opsi sekaligus (toggle), dan dinilai benar hanya jika semua jawaban benar terpilih.
+- 🏷️ **Keterangan tipe terlihat di soal**: badge "MULTIPLE_CHOICE" ditampilkan di kartu soal seperti tipe lain, plus petunjuk "Pilih 2-3 jawaban yang benar dari opsi di bawah".
+- 🌍 **Bahasa mengikuti materi**: soal multiple choice ditulis dalam bahasa pengantar materi yang dipilih (mis. Bahasa Jepang tetap dengan istilah/aksara Jepang sesuai materinya), bukan paksaan skrip asli.
+- 🔄 **Chat AI terpisah per akun**: riwayat chat asisten AI kini disimpan khusus per akun (berdasarkan ID pengguna). Ganti akun → riwayat akun sebelumnya tidak ikut tampil; data lama otomatis dimigrasi ke akun aktif.
+
+### v1.0.7
 
 - 🆘 **Halaman Pusat Bantuan / FAQ baru**: daftar pertanyaan umum yang relevan dengan aplikasi (cara belajar, latihan soal, fitur AI, tilawah, ubah email/kata sandi, dsb). Ketuk pertanyaan untuk melihat jawabannya, plus kartu **"Ajukan Pertanyaan"** untuk menghubungi tim dukungan via email `ambativasi2829@gmail.com`.
 - 🛡️ **Halaman Kebijakan Privasi baru**: dokumen resmi 11 pasal (pengumpulan data, keamanan, kode verifikasi, pihak ketiga, layanan AI, hak pengguna, kontak) yang relevan dengan sistem Ambativasi.

@@ -33,7 +33,7 @@ import { saveProgress } from "../../../../src/utils/progressTracker";
 // Struktur Data Soal Adaptif 4 Variasi
 interface SoalAI {
   no: number;
-  tipe_soal?: "standar" | "full" | "drag_drop" | "fill_blank";
+  tipe_soal?: "standar" | "multiple_choice" | "drag_drop" | "fill_blank";
   pertanyaan: string;
   pilihan?: {
     A: string;
@@ -55,12 +55,12 @@ const bersihkanDanLuruskanTeks = (teks: string): string => {
 };
 
 // 💡 LOGIKA PENGUJI JAWABAN TOLERAN MULTI-VARIAN
-const checkApakahBenar = (soal: SoalAI, jawabanUserText: string): boolean => {
+const checkApakahBenar = (soal: SoalAI, jawabanUserText: string | string[]): boolean => {
   if (!soal) return false;
   const targetUser = jawabanUserText || "";
 
   if (soal.tipe_soal === "fill_blank") {
-    const cleanUser = bersihkanDanLuruskanTeks(targetUser);
+    const cleanUser = bersihkanDanLuruskanTeks(typeof targetUser === "string" ? targetUser : "");
 
     // Jika format berbentuk array bawaan backend
     if (Array.isArray(soal.jawaban_benar)) {
@@ -85,8 +85,19 @@ const checkApakahBenar = (soal: SoalAI, jawabanUserText: string): boolean => {
     }
     return false;
   }
+  // Tipe multiple_choice: bandingkan set abjad (jawaban benar bisa lebih dari satu)
+  if (soal.tipe_soal === "multiple_choice") {
+    const kunci = Array.isArray(soal.jawaban_benar)
+      ? soal.jawaban_benar
+      : [String(soal.jawaban_benar)];
+    const pilihanUser = Array.isArray(targetUser) ? targetUser : [];
+    if (kunci.length === 0) return false;
+    if (pilihanUser.length !== kunci.length) return false;
+    const kunciSorted = [...kunci].sort();
+    const pilihanSorted = [...pilihanUser].sort();
+    return kunciSorted.every((v, i) => v === pilihanSorted[i]);
+  }
 
-  // Berlaku untuk standar, full, dan drag_drop (Mencocokkan Abjad A/B/C/D)
   return soal.jawaban_benar === targetUser;
 };
 
@@ -111,7 +122,7 @@ export default function ReviewJawabanUjian() {
 
   // --- STATE DATA REVIEW ---
   const [listSoal, setListSoal] = useState<SoalAI[]>([]);
-  const [jawabanUser, setJawabanUser] = useState<Record<number, string>>({});
+  const [jawabanUser, setJawabanUser] = useState<Record<number, string | string[]>>({});
   const [indeksAktif, setIndeksAktif] = useState(0);
   const [skor, setSkor] = useState(0);
   // --- STATE MODAL PERINGATAN KELUAR ---
@@ -179,7 +190,7 @@ export default function ReviewJawabanUjian() {
 
       if (dataSoalRaw && jawabanUserRaw) {
         const parsedSoal: SoalAI[] = JSON.parse(dataSoalRaw);
-        const parsedJawaban: Record<number, string> =
+        const parsedJawaban: Record<number, string | string[]> =
           JSON.parse(jawabanUserRaw);
         setListSoal(parsedSoal);
         setJawabanUser(parsedJawaban);
@@ -323,16 +334,8 @@ export default function ReviewJawabanUjian() {
   );
   const jawabanSalah = !isCurrentCorrect;
 
-  const isMateriChemicalEOR =
-    sumber_data?.toString().toLowerCase().includes("chemical") ||
-    sumber_data?.toString().toLowerCase().includes("eor") ||
-    sumber_data?.toString().toLowerCase().includes("polymer") ||
-    sumber_data?.toString().toLowerCase().includes("surfactant") ||
-    sumber_data?.toString().toLowerCase().includes("alkaline") ||
-    judul_bab?.toString().toLowerCase().includes("chemical");
-
   // RTL HANYA aktif jika materi tersebut murni Tajwid/Arab
-  const wajibRTL = jenisTipe === "full" && !isMateriChemicalEOR;
+  const wajibRTL = false;
 
   const renderTeksPertanyaanReview = (fullText: string = "") => {
     if (!fullText) return "";
@@ -667,9 +670,13 @@ export default function ReviewJawabanUjian() {
             soalSaatIni &&
             soalSaatIni.pilihan &&
             Object.entries(soalSaatIni.pilihan).map(([abjad, teksOpsi]) => {
-              const isUserAnswer = jawabanUser[indeksAktif] === abjad;
-              const isCorrectAnswer = soalSaatIni.jawaban_benar === abjad;
-              const isWrongUserAnswer = isUserAnswer && jawabanSalah;
+              const isUserAnswer = Array.isArray(jawabanUser[indeksAktif])
+                ? jawabanUser[indeksAktif].includes(abjad)
+                : jawabanUser[indeksAktif] === abjad;
+              const isCorrectAnswer = Array.isArray(soalSaatIni.jawaban_benar)
+                ? soalSaatIni.jawaban_benar.includes(abjad)
+                : soalSaatIni.jawaban_benar === abjad;
+              const isWrongUserAnswer = isUserAnswer && !isCorrectAnswer && jawabanSalah;
 
               let iconKanan = null;
               if (isCorrectAnswer) {
