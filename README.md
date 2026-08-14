@@ -101,7 +101,11 @@ src/
 
 ## 📋 Changelog
 
-### v1.0.8 (terbaru)
+### v1.0.9 (terbaru)
+
+- 📐 **Tombol logout Sidebar selalu di atas tab navigasi HP**: posisi tombol logout kini menyesuaikan inset bawah layar (system navigation bar) di semua halaman — tidak lagi tertutup/bentrok dengan navigasi bawaan HP saat membuka sidebar di halaman tanpa tab bar (materi, ujian, pusat bantuan, profil, dll).
+
+### v1.0.8
 
 - 🧠 **Tipe soal AI baru: Multiple Choice**: menggantikan tipe "Full" di seluruh materi & ujian (Bahasa Jepang, Tajwid, Petrofisika, Chemical EOR). Setiap soal multiple choice memiliki **2–3 jawaban benar** dari 4 opsi A/B/C/D — pengguna mengetuk beberapa opsi sekaligus (toggle), dan dinilai benar hanya jika semua jawaban benar terpilih.
 - 🏷️ **Keterangan tipe terlihat di soal**: badge "MULTIPLE_CHOICE" ditampilkan di kartu soal seperti tipe lain, plus petunjuk "Pilih 2-3 jawaban yang benar dari opsi di bawah".

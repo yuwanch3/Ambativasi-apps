@@ -11,6 +11,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import SoundTouchableOpacity from "../components/SoundTouchableOpacity";
 // 💡 IMPORT CONTEXT TEMA & BAHASA GLOBAL REAL-TIME
@@ -49,6 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // 💡 AMBIL WARNA TEMA & BAHASA REAL-TIME
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
 
   if (!isOpen) return null;
 
@@ -239,7 +241,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </View>
 
         {/* Footer Logout */}
-        <View style={styles.sidebarFooter}>
+        <View style={[styles.sidebarFooter, { paddingBottom: insets.bottom }]}>
           <SoundTouchableOpacity style={styles.logoutButton} onPress={onLogout}>
             <Ionicons
               name="log-out-outline"
