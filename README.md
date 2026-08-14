@@ -2,7 +2,7 @@
 
 **Ambativasi** adalah aplikasi mobile belajar yang menggabungkan **materi pembelajaran**, **latihan soal (ujian)**, dan **latihan membaca Al-Qur'an berbasis suara** dalam satu platform. Dibangun dengan **React Native (Expo SDK 54)** dan memanfaatkan **backend API + database terpusat** sehingga progres belajar tersinkron di semua perangkat.
 
-> **Versi saat ini:** 1.0.4 · Package: `org.misa.ambativasi`
+> **Versi saat ini:** 1.0.9 · Package: `org.misa.ambativasi`
 
 ---
 
