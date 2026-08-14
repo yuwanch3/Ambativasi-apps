@@ -793,6 +793,7 @@ export default function PengaturanScreen() {
         userData={userData}
         profileImage={profileImage}
         onLogout={handleLogout}
+        applyBottomInset={false}
       />
 
       {/* ==================== MODAL: ATUR NOTIFIKASI REMINDER ==================== */}

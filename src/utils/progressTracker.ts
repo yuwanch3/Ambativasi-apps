@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import API_URL, { apiFetch } from "../../config";
+import { getAccountId, getScopedStorageKey } from "./accountSession";
 import { getCurrentStreak, recordActivity } from "./streakTracker";
 
 export interface ProgressEntry {
@@ -17,11 +18,28 @@ export interface ProgressEntry {
   timestamp: number;
 }
 
-const STORAGE_KEY = "app_progress";
+const STORAGE_PREFIX = "app_progress_";
+const GLOBAL_KEY = "app_progress";
+
+// 💡 Migrasi data progress global lama → per akun (sekali saja).
+const migrateGlobalProgress = async (accountId: string) => {
+  try {
+    const globalRaw = await AsyncStorage.getItem(GLOBAL_KEY);
+    if (!globalRaw) return;
+    const perAccount = await AsyncStorage.getItem(`${STORAGE_PREFIX}${accountId}`);
+    if (!perAccount) {
+      await AsyncStorage.setItem(`${STORAGE_PREFIX}${accountId}`, globalRaw);
+    }
+    await AsyncStorage.removeItem(GLOBAL_KEY);
+  } catch {}
+};
 
 export async function getAllProgress(): Promise<ProgressEntry[]> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    const accountId = await getAccountId();
+    if (accountId) await migrateGlobalProgress(accountId);
+    const key = await getScopedStorageKey(STORAGE_PREFIX);
+    const raw = await AsyncStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -56,7 +74,8 @@ export async function saveProgress(entry: ProgressEntry) {
   try {
     const all = await getAllProgress();
     all.push(entry);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    const key = await getScopedStorageKey(STORAGE_PREFIX);
+    await AsyncStorage.setItem(key, JSON.stringify(all));
     await recordActivity();
     await submitXP(entry);
   } catch (e) {

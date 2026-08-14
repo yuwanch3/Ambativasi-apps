@@ -32,6 +32,7 @@ export interface SidebarProps {
   onNavigateSettings?: () => void;
   onNavigateChat?: () => void; // 💡 PROPS BARU UNTUK TRIGGER MODAL PADA MENU CHAT AI
   onNavigateShareProgress?: () => void; // 💡 TRIGGER MODAL PADA MENU BAGIKAN PROGRESS
+  applyBottomInset?: boolean; // 💡 false di halaman tab (tab bar sudah mengelola inset bawah)
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -46,6 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNavigateSettings,
   onNavigateChat,
   onNavigateShareProgress,
+  applyBottomInset = true,
 }) => {
   // 💡 AMBIL WARNA TEMA & BAHASA REAL-TIME
   const { colors } = useTheme();
@@ -241,7 +243,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </View>
 
         {/* Footer Logout */}
-        <View style={[styles.sidebarFooter, { paddingBottom: insets.bottom }]}>
+        <View
+          style={[
+            styles.sidebarFooter,
+            applyBottomInset && { paddingBottom: insets.bottom },
+          ]}
+        >
           <SoundTouchableOpacity style={styles.logoutButton} onPress={onLogout}>
             <Ionicons
               name="log-out-outline"

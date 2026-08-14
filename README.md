@@ -104,6 +104,8 @@ src/
 ### v1.0.9 (terbaru)
 
 - 📐 **Tombol logout Sidebar selalu di atas tab navigasi HP**: posisi tombol logout kini menyesuaikan inset bawah layar (system navigation bar) di semua halaman — tidak lagi tertutup/bentrok dengan navigasi bawaan HP saat membuka sidebar di halaman tanpa tab bar (materi, ujian, pusat bantuan, profil, dll).
+- 📏 **Posisi tombol logout di halaman utama & Pengaturan dirapikan**: pada halaman dengan tab navigasi (Beranda, AI Chat, dsb) tombol logout kini duduk tepat di atas tab bar dengan jarak yang pas (tidak terlalu ke atas), karena tab bar sendiri yang menangani inset bawah layar.
+- 👥 **Data belajar terpisah per akun**: jumlah subject, streak day, dan learning progress kini disimpan khusus per akun (mirip riwayat chat AI) — ganti akun tidak menampilkan data akun lain; data lama otomatis dimigrasi ke akun aktif.
 
 ### v1.0.8
 

@@ -623,6 +623,7 @@ export default function HomeScreen() {
         userData={userData}
         profileImage={profileImage}
         onLogout={handleLogout}
+        applyBottomInset={false}
       />
     </SafeAreaView>
   );

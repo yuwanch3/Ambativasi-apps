@@ -1,6 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const STORAGE_KEY = "app_streak";
+import { getAccountId, getScopedStorageKey } from "./accountSession";
+
+const STORAGE_PREFIX = "app_streak_";
+const GLOBAL_KEY = "app_streak";
 const DAY_MS = 86400000;
 
 interface StreakData {
@@ -26,9 +29,25 @@ function isConsecutive(a: string, b: string): boolean {
   return diff === DAY_MS;
 }
 
+// 💡 Migrasi data streak global lama → per akun (sekali saja).
+const migrateGlobalStreak = async (accountId: string) => {
+  try {
+    const globalRaw = await AsyncStorage.getItem(GLOBAL_KEY);
+    if (!globalRaw) return;
+    const perAccount = await AsyncStorage.getItem(`${STORAGE_PREFIX}${accountId}`);
+    if (!perAccount) {
+      await AsyncStorage.setItem(`${STORAGE_PREFIX}${accountId}`, globalRaw);
+    }
+    await AsyncStorage.removeItem(GLOBAL_KEY);
+  } catch {}
+};
+
 export async function getStreakData(): Promise<StreakData> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    const accountId = await getAccountId();
+    if (accountId) await migrateGlobalStreak(accountId);
+    const key = await getScopedStorageKey(STORAGE_PREFIX);
+    const raw = await AsyncStorage.getItem(key);
     if (raw) return JSON.parse(raw);
   } catch {}
   return { dates: [], longestStreak: 0 };
@@ -55,7 +74,10 @@ export async function recordActivity(dateStr?: string): Promise<void> {
   if (currentStreak > longest) longest = currentStreak;
 
   data.longestStreak = longest;
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    const key = await getScopedStorageKey(STORAGE_PREFIX);
+    await AsyncStorage.setItem(key, JSON.stringify(data));
+  } catch {}
 }
 
 export async function getCurrentStreak(): Promise<number> {
