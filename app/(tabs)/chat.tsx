@@ -28,6 +28,7 @@ export default function ChatScreen() {
 
   const [input, setInput] = useState("");
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -35,6 +36,19 @@ export default function ChatScreen() {
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
     }
   }, [messages]);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -146,7 +160,14 @@ export default function ChatScreen() {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={{ flex: 1 }}>
+        <View
+          style={[
+            styles.contentArea,
+            Platform.OS === "android" && {
+              paddingBottom: keyboardHeight,
+            },
+          ]}
+        >
           <FlatList
             ref={flatListRef}
             data={messages}
@@ -327,6 +348,7 @@ export default function ChatScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  contentArea: { flex: 1 },
   header: {
     flexDirection: "row",
     alignItems: "center",

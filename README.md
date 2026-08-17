@@ -107,6 +107,7 @@ src/
 - 🖼️ **Tampilan PDF materi tidak lagi terpotong**: viewer PDF kini memenuhi area konten secara proporsional (sebelumnya memakai tinggi layar penuh sehingga bagian bawah bisa terpotong oleh nav bar HP).
 - ⌨️ **Form login/daftar/reset tidak tertutup keyboard**: halaman auth kini bisa di-scroll dan konten diangkat otomatis saat keyboard muncul di layar kecil.
 - 🧭 **Halaman Al-Qur'an (Tilawah) rapi di HP ber-notch**: konten menyesuaikan area aman atas (status bar/notch) secara dinamis, dan panel surah tidak lagi terpotong.
+- 💬 **Kolom chat AI tidak lagi tertutup keyboard**: saat mengetik pesan di halaman AI Chat, kolom input beserta tombol kirim kini terangkat otomatis di atas keyboard (diperbaiki untuk Android modern yang edge-to-edge).
 
 ### v1.0.9
 
