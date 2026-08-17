@@ -2,6 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -116,7 +119,17 @@ export default function ResetPasswordScreen() {
       <StatusBar barStyle={colors.statusBarStyle} backgroundColor={colors.background} />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <Text style={[styles.title, { color: colors.text }]}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={[styles.title, { color: colors.text }]}>
         {language === "id" ? "Buat Password Baru" : "Create New Password"}
       </Text>
       <Text style={[styles.subtitle, { color: colors.subtext }]}>
@@ -188,6 +201,8 @@ export default function ResetPasswordScreen() {
           {language === "id" ? "Simpan & Login" : "Save & Sign In"}
         </Text>
       </SoundTouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -195,8 +210,15 @@ export default function ResetPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     paddingHorizontal: 24,
+  },
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingVertical: 24,
   },
   title: {
     fontSize: 26,

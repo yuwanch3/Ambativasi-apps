@@ -672,17 +672,18 @@ const styles = StyleSheet.create({
   /* Streak */
   streakCard: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     padding: 16,
     borderRadius: 20,
     borderWidth: 1,
     marginBottom: 16,
   },
-  streakLeft: { flexDirection: "row", alignItems: "center", flex: 1, gap: 10 },
+  streakLeft: { flexDirection: "row", alignItems: "center", flex: 1, gap: 10, minWidth: 120 },
   streakFlameWrap: { borderRadius: 12, padding: 4 },
   streakNumber: { fontSize: 20, fontWeight: "bold" },
-  streakLabel: { fontSize: 12, marginTop: 1 },
-  calendarRow: { flexDirection: "row", gap: 8, marginLeft: 10 },
+  streakLabel: { fontSize: 12, marginTop: 1, flexShrink: 1 },
+  calendarRow: { flexDirection: "row", gap: 8, marginLeft: 10, flexShrink: 1 },
   calendarDay: { alignItems: "center" },
   calendarDot: {
     width: 24,

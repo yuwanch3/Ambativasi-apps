@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
   },
   pdfViewer: {
     flex: 1,
-    width: Dimensions.get("window").width - 42,
-    height: Dimensions.get("window").height,
+    width: "100%",
   },
 });

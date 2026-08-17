@@ -14,12 +14,13 @@ import {
     Easing,
     Modal,
     Pressable,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     View,
+    useWindowDimensions,
 } from "react-native";
+import { useSafeAreaInsets, SafeAreaView } from "react-native-safe-area-context";
 
 import { WebView } from "react-native-webview";
 
@@ -452,6 +453,8 @@ function mergeTranscriptParts(
 export default function App() {
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
+  const { height: winHeight } = useWindowDimensions();
 
   // Terjemahan dengan placeholder: tr("key", { ayah: 3 }).
   const tr = (key: string, params?: Record<string, string | number>) => {
@@ -787,7 +790,7 @@ export default function App() {
   // Mencegah crash jika activeSurah atau verses bernilai undefined
   if (!activeSurah || !activeSurah.verses || activeSurah.verses.length === 0) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={[]}>
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
@@ -1472,9 +1475,9 @@ body.transitioning .next {
   // 6. TAMPILAN APLIKASI (JSX)
   // ==========================================================
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[styles.container, { paddingTop: insets.top + 12 }]}
         keyboardShouldPersistTaps="handled"
       >
         {/* ================================================== */}
@@ -1609,7 +1612,10 @@ body.transitioning .next {
           <WebView
             key={`${activeSurah.number}-${activeVerse.ayah}-${recognizedWordStatuses.join("-")}`}
             source={{ html: threeAyahHtml }}
-            style={styles.quranWebView}
+            style={[
+              styles.quranWebView,
+              { height: Math.min(330, winHeight * 0.42) },
+            ]}
             originWhitelist={["*"]}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
@@ -1816,7 +1822,6 @@ const createStyles = (colors: ThemeColors) => {
     container: {
       flexGrow: 1,
       paddingHorizontal: 20,
-      paddingTop: 36,
       paddingBottom: 40,
     },
     // Style header navigasi surat & ayat.
@@ -1838,6 +1843,7 @@ const createStyles = (colors: ThemeColors) => {
       color: accent,
       fontSize: 42,
       fontWeight: "300",
+      lineHeight: 42,
     },
     disabledNavigationButton: {
       opacity: 0.3,
@@ -1936,7 +1942,6 @@ const createStyles = (colors: ThemeColors) => {
     },
     // Style kartu WebView tiga ayat.
     quranWebView: {
-      height: 330,
       marginTop: 16,
       backgroundColor: "transparent",
     },

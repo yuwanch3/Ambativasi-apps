@@ -879,7 +879,7 @@ export default function ProfileScreen() {
         <View style={styles.modalCustomOverlay}>
           <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
 
-          <View style={styles.modalCustomHeader}>
+          <View style={[styles.modalCustomHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalCustomTitle}>
               {language === "id"
                 ? "Sesuaikan Foto Profil"
@@ -1118,7 +1118,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   modalCustomHeader: {
-    paddingTop: Platform.OS === "android" ? 40 : 20,
     paddingBottom: 20,
     alignItems: "center",
   },

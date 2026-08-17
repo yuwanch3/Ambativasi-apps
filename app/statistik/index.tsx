@@ -434,9 +434,9 @@ const styles = StyleSheet.create({
   cardLabel: { fontSize: 12, fontWeight: "600", marginBottom: 8 },
   cardHint: { fontSize: 11, marginTop: 8, opacity: 0.7 },
 
-  combinedRow: { flexDirection: "row", alignItems: "baseline" },
-  combinedBig: { fontSize: 42, fontWeight: "bold" },
-  combinedPct: { fontSize: 18, fontWeight: "bold", marginLeft: 2 },
+  combinedRow: { flexDirection: "row", alignItems: "baseline", flexWrap: "wrap" },
+  combinedBig: { fontSize: 42, fontWeight: "bold", flexShrink: 1 },
+  combinedPct: { fontSize: 18, fontWeight: "bold", marginLeft: 2, flexShrink: 1 },
   progressBarBg: {
     height: 8,
     borderRadius: 4,

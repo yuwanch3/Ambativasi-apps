@@ -101,7 +101,14 @@ src/
 
 ## 📋 Changelog
 
-### v1.0.9 (terbaru)
+### v1.1.0 (terbaru)
+
+- 📱 **Layout lebih fleksibel & proporsional di semua HP Android**: berbagai elemen (Streak Card di Beranda, statistik gabungan, teks surah Al-Qur'an, modal crop foto profil) kini menyesuaikan lebar layar secara otomatis — tidak lagi ke-geser/terpotong/tertutup di layar kecil maupun besar.
+- 🖼️ **Tampilan PDF materi tidak lagi terpotong**: viewer PDF kini memenuhi area konten secara proporsional (sebelumnya memakai tinggi layar penuh sehingga bagian bawah bisa terpotong oleh nav bar HP).
+- ⌨️ **Form login/daftar/reset tidak tertutup keyboard**: halaman auth kini bisa di-scroll dan konten diangkat otomatis saat keyboard muncul di layar kecil.
+- 🧭 **Halaman Al-Qur'an (Tilawah) rapi di HP ber-notch**: konten menyesuaikan area aman atas (status bar/notch) secara dinamis, dan panel surah tidak lagi terpotong.
+
+### v1.0.9
 
 - 📐 **Tombol logout Sidebar selalu di atas tab navigasi HP**: posisi tombol logout kini menyesuaikan inset bawah layar (system navigation bar) di semua halaman — tidak lagi tertutup/bentrok dengan navigasi bawaan HP saat membuka sidebar di halaman tanpa tab bar (materi, ujian, pusat bantuan, profil, dll).
 - 📏 **Posisi tombol logout di halaman utama & Pengaturan dirapikan**: pada halaman dengan tab navigasi (Beranda, AI Chat, dsb) tombol logout kini duduk tepat di atas tab bar dengan jarak yang pas (tidak terlalu ke atas), karena tab bar sendiri yang menangani inset bawah layar.
