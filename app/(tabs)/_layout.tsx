@@ -1,25 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "../../context/ThemeContext";
 
 export default function TabsLayout() {
   const { colors } = useTheme();
-
-  // Cadangan ruang di bawah yg stabil: tidak boleh mengecil walau navbar
-  // HP auto-sembunyi (overlay) sehingga tab bar tidak loncat / ketutupan.
   const insets = useSafeAreaInsets();
-  const [reservedBottom, setReservedBottom] = useState(insets.bottom);
-
-  useEffect(() => {
-    if (insets.bottom > reservedBottom) {
-      setReservedBottom(insets.bottom); // hanya tumbuh, tidak mengecil
-    }
-  }, [insets.bottom, reservedBottom]);
-
-  const bottomReserve = Math.max(reservedBottom, 10);
+  const bottomReserve = Math.max(insets.bottom, 10);
 
   return (
     <Tabs
@@ -42,7 +31,11 @@ export default function TabsLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -51,7 +44,11 @@ export default function TabsLayout() {
         options={{
           title: "AI Chat",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "sparkles" : "sparkles-outline"} size={24} color={color} />
+            <Ionicons
+              name={focused ? "sparkles" : "sparkles-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -60,7 +57,11 @@ export default function TabsLayout() {
         options={{
           title: "Peringkat",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "trophy" : "trophy-outline"} size={24} color={color} />
+            <Ionicons
+              name={focused ? "trophy" : "trophy-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -69,7 +70,11 @@ export default function TabsLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "settings" : "settings-outline"} size={24} color={color} />
+            <Ionicons
+              name={focused ? "settings" : "settings-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />

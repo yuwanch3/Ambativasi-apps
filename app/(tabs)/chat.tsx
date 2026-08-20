@@ -14,8 +14,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SoundTouchableOpacity from "../../components/SoundTouchableOpacity";
 
 import { useChat } from "../../context/ChatContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -28,27 +28,16 @@ export default function ChatScreen() {
 
   const [input, setInput] = useState("");
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     if (messages.length > 0) {
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      setTimeout(
+        () => flatListRef.current?.scrollToEnd({ animated: true }),
+        100,
+      );
     }
   }, [messages]);
-
-  useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-    });
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardHeight(0);
-    });
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -62,7 +51,7 @@ export default function ChatScreen() {
     clearHistory();
   };
 
-  const renderMessage = ({ item }: { item: typeof messages[0] }) => {
+  const renderMessage = ({ item }: { item: (typeof messages)[0] }) => {
     const isUser = item.role === "user";
     return (
       <View style={[styles.messageRow, isUser ? styles.userRow : styles.aiRow]}>
@@ -155,19 +144,13 @@ export default function ChatScreen() {
         )}
       </View>
 
-      {/* KONTEN CHAT PENANGANAN KEYBOARD STABIL */}
+      {/* KONTEN CHAT DENGAN KEYBOARD HANDLING YANG BENAR */}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
-        <View
-          style={[
-            styles.contentArea,
-            Platform.OS === "android" && {
-              paddingBottom: keyboardHeight,
-            },
-          ]}
-        >
+        <View style={{ flex: 1 }}>
           <FlatList
             ref={flatListRef}
             data={messages}
@@ -230,7 +213,11 @@ export default function ChatScreen() {
           <View
             style={[
               styles.inputContainer,
-              { backgroundColor: colors.card, borderColor: colors.border },
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                paddingBottom: Platform.OS === "ios" ? 8 : 8,
+              },
             ]}
           >
             <TextInput
@@ -328,10 +315,7 @@ export default function ChatScreen() {
               </SoundTouchableOpacity>
 
               <SoundTouchableOpacity
-                style={[
-                  styles.btnModalConfirm,
-                  { backgroundColor: "#EF4444" },
-                ]}
+                style={[styles.btnModalConfirm, { backgroundColor: "#EF4444" }]}
                 onPress={handleClear}
               >
                 <Text style={styles.btnModalConfirmText}>
@@ -348,7 +332,6 @@ export default function ChatScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  contentArea: { flex: 1 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -359,8 +342,15 @@ const styles = StyleSheet.create({
   headerBtn: { padding: 4, marginRight: 8 },
   headerTitle: { fontSize: 17, fontWeight: "bold" },
   headerSub: { fontSize: 12, marginTop: 1 },
-  listContent: { padding: 16, paddingBottom: 16 },
-  messageRow: { flexDirection: "row", marginBottom: 16, alignItems: "flex-end" },
+  listContent: {
+    padding: 16,
+    paddingBottom: 20, // padding bottom untuk memberi ruang
+  },
+  messageRow: {
+    flexDirection: "row",
+    marginBottom: 16,
+    alignItems: "flex-end",
+  },
   userRow: { justifyContent: "flex-end" },
   aiRow: { justifyContent: "flex-start" },
   avatar: {
@@ -371,16 +361,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 8,
   },
-  bubble: { maxWidth: "78%", borderRadius: 16, paddingHorizontal: 14, paddingVertical: 10 },
+  bubble: {
+    maxWidth: "78%",
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
   userBubble: { borderBottomRightRadius: 4 },
   aiBubble: { borderBottomLeftRadius: 4, borderWidth: 1 },
   messageText: { fontSize: 15, lineHeight: 21 },
   timestamp: { fontSize: 10, marginTop: 4, textAlign: "right" },
-  emptyContainer: { alignItems: "center", paddingTop: 80, paddingHorizontal: 32 },
-  emptyIcon: { width: 80, height: 80, borderRadius: 40, justifyContent: "center", alignItems: "center", marginBottom: 20 },
-  emptyTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 8 },
+  emptyContainer: {
+    alignItems: "center",
+    paddingTop: 80,
+    paddingHorizontal: 32,
+  },
+  emptyIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+  },
   emptySub: { fontSize: 14, textAlign: "center", lineHeight: 20 },
-  typingContainer: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingBottom: 4 },
+  typingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingBottom: 4,
+  },
   typingText: { fontSize: 12, marginLeft: 8 },
   inputContainer: {
     flexDirection: "row",
