@@ -780,7 +780,7 @@ export default function PengaturanScreen() {
             Ambativasi App
           </Text>
           <Text style={[styles.versionNumber, { color: colors.subtext }]}>
-            Versi 1.1.0 (Build 2026)
+            Versi 1.1.1 (Build 2026)
           </Text>
         </View>
       </ScrollView>

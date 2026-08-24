@@ -149,7 +149,7 @@ export default function App() {
         >
           <View style={styles.logoContainer}>
         <Image
-          source={require("../../assets/images/icon-keren.png")}
+          source={require("../../assets/images/ambativasi-icon.png")}
           style={styles.logo}
         />
         <Text style={[styles.title, { color: colors.text }]}>Ambativasi</Text>

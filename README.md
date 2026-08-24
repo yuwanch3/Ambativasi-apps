@@ -101,7 +101,11 @@ src/
 
 ## 📋 Changelog
 
-### v1.1.0 (terbaru)
+### v1.1.1 (terbaru)
+
+- 🎨 **Ikon Ambativasi diperbarui**: ikon baru kini digunakan pada loading/splash screen, halaman Login dan Register, serta ikon aplikasi Android.
+
+### v1.1.0
 
 - 📱 **Layout lebih fleksibel & proporsional di semua HP Android**: berbagai elemen (Streak Card di Beranda, statistik gabungan, teks surah Al-Qur'an, modal crop foto profil) kini menyesuaikan lebar layar secara otomatis — tidak lagi ke-geser/terpotong/tertutup di layar kecil maupun besar.
 - 🖼️ **Tampilan PDF materi tidak lagi terpotong**: viewer PDF kini memenuhi area konten secara proporsional (sebelumnya memakai tinggi layar penuh sehingga bagian bawah bisa terpotong oleh nav bar HP).

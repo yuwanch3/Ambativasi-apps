@@ -2,9 +2,9 @@
   "expo": {
     "name": "Ambativasi",
     "slug": "misa-misacom",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon-keren.png",
+    "icon": "./assets/images/ambativasi-icon.png",
     "scheme": "ambativasi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -16,9 +16,8 @@
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/icon-keren.png",
-        "backgroundImage": "./assets/images/icon-keren.png",
-        "monochromeImage": "./assets/images/icon-keren.png"
+        "foregroundImage": "./assets/images/ambativasi-icon.png",
+        "monochromeImage": "./assets/images/ambativasi-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -30,7 +29,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon-keren.png",
+          "image": "./assets/images/ambativasi-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
